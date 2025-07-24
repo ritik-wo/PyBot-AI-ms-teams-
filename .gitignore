@@ -1,0 +1,50 @@
+# TeamsFx files
+env/.env.*.user
+env/.env.local
+appManifest/build/
+
+# Python virtual environments
+.venv/
+venv/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Environment and secrets
+.env
+.env.*
+.deployment/
+
+# VSCode and IDE
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+*.tmp
+*.bak
+
+# Misc
+*.swp
+*.lock
+
+# Node/npm artifacts (if any JS tooling)
+node_modules/
+
+# TeamsFx local settings
+.m365/
+.m365rc.json
