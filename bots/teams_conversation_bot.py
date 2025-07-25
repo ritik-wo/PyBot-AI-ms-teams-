@@ -11,6 +11,9 @@ from botbuilder.schema import CardAction, HeroCard, Mention, ConversationParamet
 from botbuilder.schema.teams import TeamInfo, TeamsChannelAccount
 from botbuilder.schema._connector_client_enums import ActionTypes
 
+# Store only the latest conversation reference for the team/chat
+CONVERSATION_REFERENCE = None
+
 ADAPTIVECARDTEMPLATE = "resources/UserMentionCardTemplate.json"
 
 class TeamsConversationBot(TeamsActivityHandler):
@@ -31,34 +34,41 @@ class TeamsConversationBot(TeamsActivityHandler):
                 )
 
     async def on_message_activity(self, turn_context: TurnContext):
+        global CONVERSATION_REFERENCE
+        # Store the latest conversation reference for the team/chat
+        CONVERSATION_REFERENCE = TurnContext.get_conversation_reference(turn_context.activity)
+        print(f"[DEBUG] Stored latest conversation reference for proactive messaging.")
         TurnContext.remove_recipient_mention(turn_context.activity)
         text = turn_context.activity.text.strip().lower()
-
+        if "show welcome" in text or "showwelcome" in text:
+            await self._send_card(turn_context, False)
+            return
         if "mention me" in text:
             await self._mention_adaptive_card_activity(turn_context)
             return
-
         if "mention" in text:
             await self._mention_activity(turn_context)
             return
-
         if "update" in text:
             await self._send_card(turn_context, True)
             return
-
         if "message" in text:
             await self._message_all_members(turn_context)
             return
-
         if "who" in text:
             await self._get_member(turn_context)
             return
-
         if "delete" in text:
             await self._delete_card_activity(turn_context)
             return
-
-        await self._send_card(turn_context, False)
+        print(f"[INFO] Received message: '{text}' from user: {turn_context.activity.from_property.name}")
+        try:
+            await turn_context.send_activity("Hello! I received your message.")
+        except Exception as e:
+            print(f"[ERROR] Failed to send message: {e}")
+            import traceback
+            traceback.print_exc()
+            await self._send_card(turn_context, False)
         return
 
     async def _mention_adaptive_card_activity(self, turn_context: TurnContext):
@@ -225,3 +235,33 @@ class TeamsConversationBot(TeamsActivityHandler):
 
     async def _delete_card_activity(self, turn_context: TurnContext):
         await turn_context.delete_activity(turn_context.activity.reply_to_id)
+
+    async def send_message_to_all_members(self, message: str):
+        from app import ADAPTER  # Avoid circular import at top
+        global CONVERSATION_REFERENCE
+        if not CONVERSATION_REFERENCE:
+            print("[ERROR] No conversation reference available. Have a user interact with the bot first.")
+            return
+
+        async def logic(turn_context: TurnContext):
+            try:
+                paged_members = await TeamsInfo.get_paged_members(turn_context)
+                for member in paged_members.members:
+                    conversation_parameters = ConversationParameters(
+                        is_group=False,
+                        bot=turn_context.activity.recipient,
+                        members=[member],
+                        tenant_id=turn_context.activity.conversation.tenant_id,
+                    )
+                    async def send_to_member(tc):
+                        await tc.send_activity(MessageFactory.text(message))
+                    await turn_context.adapter.create_conversation(
+                        TurnContext.get_conversation_reference(turn_context.activity),
+                        send_to_member,
+                        conversation_parameters
+                    )
+                    print(f"[INFO] Proactive message sent to user: {member.id}")
+            except Exception as e:
+                print(f"[ERROR] Failed to send proactive messages: {e}")
+
+        await ADAPTER.continue_conversation(CONVERSATION_REFERENCE, logic, self._app_id)
