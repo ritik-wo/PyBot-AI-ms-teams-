@@ -24,6 +24,7 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 import requests
+import json
 
 # Explicitly load the .env file from the project root
 load_dotenv(dotenv_path=Path('.') / '.env')
@@ -104,7 +105,6 @@ def get_graph_access_token():
     }
     print(f"[DEBUG] Requesting Graph access token from {url}")
     r = requests.post(url, data=data)
-    print(f"[DEBUG] Token response: {r.status_code} {r.text}")
     r.raise_for_status()
     return r.json()["access_token"]
 
@@ -124,7 +124,24 @@ def find_user_by_email(email, access_token):
     print(f"[DEBUG] Found user: {users[0]}")
     return users[0]
 
-# Helper: Create 1:1 chat
+# Helper: Find existing chat with user
+def find_chat_with_user(user_id, access_token):
+    url = f"https://graph.microsoft.com/v1.0/users/{user_id}/chats"
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+    print(f"[DEBUG] Finding existing chats for user_id: {user_id}")
+    r = requests.get(url, headers=headers)
+    print(f"[DEBUG] Find chats response: {r.status_code} {r.text}")
+    
+    if r.status_code == 200:
+        chats = r.json().get("value", [])
+        # Look for one-on-one chats
+        for chat in chats:
+            if chat.get("chatType") == "oneOnOne":
+                print(f"[DEBUG] Found existing one-on-one chat: {chat['id']}")
+                return chat["id"]
+    
+    print(f"[DEBUG] No existing one-on-one chat found for user_id: {user_id}")
+    return None
 
 def create_chat_with_user(user_id, access_token):
     url = "https://graph.microsoft.com/v1.0/chats"
@@ -144,6 +161,18 @@ def create_chat_with_user(user_id, access_token):
     print(f"[DEBUG] Create chat response: {r.status_code} {r.text}")
     r.raise_for_status()
     return r.json()["id"]
+
+# Helper: Get or create chat with user
+def get_or_create_chat_with_user(user_id, access_token):
+    # First try to find existing chat
+    existing_chat_id = find_chat_with_user(user_id, access_token)
+    if existing_chat_id:
+        print(f"[DEBUG] Using existing chat: {existing_chat_id}")
+        return existing_chat_id
+    
+    # If no existing chat, create new one
+    print(f"[DEBUG] Creating new chat for user_id: {user_id}")
+    return create_chat_with_user(user_id, access_token)
 
 # Helper: Send card message to chat
 
@@ -174,6 +203,129 @@ def send_card_message_to_chat(chat_id, user_name, message, access_token):
     print(f"[DEBUG] Sending card message to chat_id: {chat_id}")
     r = requests.post(url, headers=headers, json=data)
     print(f"[DEBUG] Send card message response: {r.status_code} {r.text}")
+    r.raise_for_status()
+    return r.json()
+
+# Helper: Send simple text message to chat (for testing)
+def send_text_message_to_chat(chat_id, message, access_token):
+    import urllib.parse
+    # URL encode the chat_id since it contains special characters
+    encoded_chat_id = urllib.parse.quote(chat_id, safe='')
+    url = f"https://graph.microsoft.com/v1.0/chats/{encoded_chat_id}/messages"
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+    data = {
+        "body": {
+            "contentType": "html",
+            "content": message
+        }
+    }
+    print(f"[DEBUG] Sending text message to chat_id: {chat_id}")
+    print(f"[DEBUG] Encoded chat_id: {encoded_chat_id}")
+    print(f"[DEBUG] Full URL: {url}")
+    print(f"[DEBUG] Message content: {message}")
+    print(f"[DEBUG] Request headers: {headers}")
+    print(f"[DEBUG] Request data: {data}")
+    r = requests.post(url, headers=headers, json=data)
+    print(f"[DEBUG] Send text message response: {r.status_code} {r.text}")
+    r.raise_for_status()
+    return r.json()
+
+# Helper: Get fresh access token with detailed logging
+def get_fresh_graph_access_token():
+    url = f"https://login.microsoftonline.com/{GRAPH_TENANT_ID}/oauth2/v2.0/token"
+    data = {
+        "grant_type": "client_credentials",
+        "client_id": GRAPH_CLIENT_ID,
+        "client_secret": GRAPH_CLIENT_SECRET,
+        "scope": "https://graph.microsoft.com/.default"
+    }
+    print(f"[DEBUG] Requesting fresh Graph access token from {url}")
+    print(f"[DEBUG] Using client_id: {GRAPH_CLIENT_ID}")
+    print(f"[DEBUG] Using tenant_id: {GRAPH_TENANT_ID}")
+    r = requests.post(url, data=data)
+    print(f"[DEBUG] Fresh token response: {r.status_code} {r.text}")
+    r.raise_for_status()
+    token_data = r.json()
+    print(f"[DEBUG] Token type: {token_data.get('token_type')}")
+    print(f"[DEBUG] Token expires in: {token_data.get('expires_in')} seconds")
+    return token_data["access_token"]
+
+# Helper: Send message using Teams Activity API
+def send_teams_activity_message(user_id, message, access_token):
+    url = "https://graph.microsoft.com/v1.0/teams/activity/send"
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+    
+    # Create adaptive card content
+    card_content = {
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        "type": "AdaptiveCard",
+        "version": "1.4",
+        "body": [
+            {
+                "type": "TextBlock",
+                "text": f"Hello! 👋",
+                "weight": "bolder",
+                "size": "large",
+                "color": "accent"
+            },
+            {
+                "type": "TextBlock",
+                "text": message,
+                "wrap": True,
+                "spacing": "medium"
+            },
+            {
+                "type": "FactSet",
+                "facts": [
+                    {
+                        "title": "Sent via:",
+                        "value": "Teams Activity API 📡"
+                    },
+                    {
+                        "title": "Timestamp:",
+                        "value": f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} 🕐"
+                    }
+                ],
+                "spacing": "medium"
+            }
+        ],
+        "actions": [
+            {
+                "type": "Action.Submit",
+                "title": "Reply with 'Hello Bot!' 👋",
+                "data": {
+                    "action": "reply",
+                    "message": "Hello Bot!"
+                }
+            }
+        ]
+    }
+    
+    data = {
+        "topic": {
+            "source": "entityUrl",
+            "value": f"https://graph.microsoft.com/v1.0/users/{user_id}"
+        },
+        "activityType": "taskCreated",
+        "previewText": {
+            "content": message[:100] + "..." if len(message) > 100 else message
+        },
+        "recipient": {
+            "@odata.type": "microsoft.graph.aadUserConversationMember",
+            "user@odata.bind": f"https://graph.microsoft.com/v1.0/users/{user_id}"
+        },
+        "templateParameters": [
+            {
+                "name": "cardContent",
+                "value": json.dumps(card_content)
+            }
+        ]
+    }
+    
+    print(f"[DEBUG] Sending Teams activity to user_id: {user_id}")
+    print(f"[DEBUG] Teams activity data: {json.dumps(data, indent=2)}")
+    r = requests.post(url, headers=headers, json=data)
+    print(f"[DEBUG] Teams activity response: {r.status_code} {r.text}")
     r.raise_for_status()
     return r.json()
 
@@ -219,23 +371,122 @@ async def send_message_to_all(req: Request) -> Response:
     return json_response({"status": "Message sent to all members"})
 
 
-# Update the endpoint to use the helpers
+# Update the endpoint to use Bot Framework proactive messaging (simplified approach)
 async def send_message_to_user(req: Request) -> Response:
     data = await req.json()
     email = data.get("email")
     message = data.get("message")
     if not email or not message:
         return json_response({"error": "Missing 'email' or 'message' in payload"}, status=400)
+    
     try:
         print(f"[DEBUG] Starting send_message_to_user for {email}")
-        access_token = get_graph_access_token()
+        
+        # Get fresh access token to find user
+        access_token = get_fresh_graph_access_token()
+        
+        # Find the user by email
         user = find_user_by_email(email, access_token)
         if not user:
             return json_response({"error": f"User with email {email} not found"}, status=404)
-        chat_id = create_chat_with_user(user["id"], access_token)
-        send_card_message_to_chat(chat_id, user.get("displayName", email), message, access_token)
-        print(f"[DEBUG] Successfully sent card message to {email}")
-        return json_response({"status": f"Message sent to {email}"})
+        
+        print(f"[DEBUG] Found user: {user.get('displayName', email)} with ID: {user['id']}")
+        
+        # Import the global conversation reference from the bot
+        from bots.teams_conversation_bot import CONVERSATION_REFERENCE
+        
+        if not CONVERSATION_REFERENCE:
+            return json_response({"error": "No conversation reference available. Have a user interact with the bot first in Teams."}, status=400)
+        
+        # Use Bot Framework's proactive messaging to create a new conversation
+        from botbuilder.schema import ConversationParameters, ChannelAccount
+        from botbuilder.core import MessageFactory, CardFactory
+        
+        async def send_to_user_logic(turn_context):
+            try:
+                print(f"[DEBUG] Creating conversation with user: {user.get('displayName', email)}")
+                
+                # Create a channel account for the target user
+                target_user = ChannelAccount(
+                    id=user['id'],
+                    name=user.get('displayName', email)
+                )
+                
+                # Create conversation parameters
+                conversation_parameters = ConversationParameters(
+                    is_group=False,
+                    bot=turn_context.activity.recipient,
+                    members=[target_user],
+                    tenant_id=turn_context.activity.conversation.tenant_id,
+                )
+                
+                # Create adaptive card
+                adaptive_card = {
+                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                    "type": "AdaptiveCard",
+                    "version": "1.4",
+                    "body": [
+                        {
+                            "type": "TextBlock",
+                            "text": f"Hello {user.get('displayName', email)}! 👋",
+                            "weight": "bolder",
+                            "size": "large",
+                            "color": "accent"
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": message,
+                            "wrap": True,
+                            "spacing": "medium"
+                        },
+                        {
+                            "type": "FactSet",
+                            "facts": [
+                                {
+                                    "title": "Sent via:",
+                                    "value": "Bot Framework API 📡"
+                                },
+                                {
+                                    "title": "Timestamp:",
+                                    "value": f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} 🕐"
+                                }
+                            ],
+                            "spacing": "medium"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "type": "Action.Submit",
+                            "title": "Reply with 'Hello Bot!' 👋",
+                            "data": {
+                                "action": "reply",
+                                "message": "Hello Bot!"
+                            }
+                        }
+                    ]
+                }
+                
+                # Send the adaptive card
+                async def send_message(tc):
+                    await tc.send_activity(MessageFactory.attachment(CardFactory.adaptive_card(adaptive_card)))
+                    print(f"[DEBUG] Successfully sent adaptive card to {email}")
+                
+                await turn_context.adapter.create_conversation(
+                    CONVERSATION_REFERENCE,
+                    send_message,
+                    conversation_parameters
+                )
+                
+            except Exception as e:
+                print(f"[ERROR] Failed to send message to {email}: {e}")
+                import traceback
+                traceback.print_exc()
+        
+        # Execute the proactive messaging
+        await ADAPTER.continue_conversation(CONVERSATION_REFERENCE, send_to_user_logic, CONFIG.APP_ID)
+        
+        return json_response({"status": f"Adaptive card sent to {email}", "method": "bot_framework"})
+        
     except Exception as e:
         print(f"[ERROR] Failed to send message to {email}: {e}")
         import traceback

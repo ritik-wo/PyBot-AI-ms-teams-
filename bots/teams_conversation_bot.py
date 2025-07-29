@@ -39,6 +39,20 @@ class TeamsConversationBot(TeamsActivityHandler):
         CONVERSATION_REFERENCE = TurnContext.get_conversation_reference(turn_context.activity)
         print(f"[DEBUG] Stored latest conversation reference for proactive messaging.")
         TurnContext.remove_recipient_mention(turn_context.activity)
+        
+        # Handle adaptive card actions (when text is None)
+        if turn_context.activity.text is None:
+            print(f"[DEBUG] Received adaptive card action from user: {turn_context.activity.from_property.name}")
+            # Check if it's from our adaptive card
+            if hasattr(turn_context.activity, 'value') and turn_context.activity.value:
+                action_data = turn_context.activity.value
+                if action_data.get('action') == 'reply':
+                    await turn_context.send_activity(f"Thanks for the reply! You said: {action_data.get('message', 'Hello Bot!')}")
+                    return
+            # Default response for adaptive card actions
+            await turn_context.send_activity("Thanks for interacting with the card! 🎉")
+            return
+        
         text = turn_context.activity.text.strip().lower()
         if "show welcome" in text or "showwelcome" in text:
             await self._send_card(turn_context, False)
