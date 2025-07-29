@@ -506,6 +506,9 @@ APP.router.add_get("/", root)
 
 if __name__ == "__main__":
     try:
-        web.run_app(APP, host="localhost", port=CONFIG.PORT)
+        # Use PORT from environment variable (for Render) or fallback to CONFIG.PORT
+        port = int(os.environ.get("PORT", CONFIG.PORT))
+        print(f"[INFO] Starting bot on port: {port}")
+        web.run_app(APP, host="0.0.0.0", port=port)
     except Exception as error:
         raise error
