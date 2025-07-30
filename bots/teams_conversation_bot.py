@@ -29,8 +29,11 @@ class TeamsConversationBot(TeamsActivityHandler):
     ):
         for member in teams_members_added:
             if member.id != turn_context.activity.recipient.id:
+                # Use display name which is more reliable than given_name/surname
+                display_name = member.name or "Team Member"
+                
                 await turn_context.send_activity(
-                    f"Welcome to the team { member.given_name } { member.surname }. "
+                    f"Welcome to the team, {display_name}! 👋 I'm your Teams bot assistant. You can interact with me anytime!"
                 )
 
     async def on_message_activity(self, turn_context: TurnContext):
