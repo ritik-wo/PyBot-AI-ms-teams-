@@ -3,7 +3,8 @@ from api.graph_api import (
     get_fresh_graph_access_token, 
     find_user_by_email, 
     get_or_create_chat_with_user, 
-    send_card_message_to_chat
+    send_card_message_to_chat,
+    send_teams_activity_message
 )
 from api.bot_framework_api import send_message_via_bot_framework
 
@@ -64,12 +65,28 @@ async def send_message_to_user_service(email, message, adapter, app_id):
                 })
                 
             except Exception as graph_error:
-                print(f"[ERROR] Graph API approach also failed: {graph_error}")
-                return json_response({
-                    "error": f"Both Bot Framework and Graph API approaches failed. User may need to interact with the bot first.",
-                    "bot_error": str(bot_error),
-                    "graph_error": str(graph_error)
-                }, status=500)
+                print(f"[ERROR] Graph API chat approach failed: {graph_error}")
+                print(f"[DEBUG] Trying Teams Activity API as final fallback")
+                
+                # Final fallback: Try Teams Activity API
+                try:
+                    send_teams_activity_message(user["id"], message, access_token)
+                    print(f"[DEBUG] Successfully sent via Teams Activity API to {email}")
+                    
+                    return json_response({
+                        "status": f"Message sent to {email} via Teams Activity API", 
+                        "method": "teams_activity_api",
+                        "user_id": user["id"]
+                    })
+                    
+                except Exception as teams_error:
+                    print(f"[ERROR] Teams Activity API also failed: {teams_error}")
+                    return json_response({
+                        "error": f"All approaches failed. User may need to interact with the bot first.",
+                        "bot_error": str(bot_error),
+                        "graph_error": str(graph_error),
+                        "teams_error": str(teams_error)
+                    }, status=500)
         
     except Exception as e:
         print(f"[ERROR] Failed to send message to {email}: {e}")

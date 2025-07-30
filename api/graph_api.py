@@ -44,16 +44,21 @@ def find_user_by_email(email, access_token):
     return users[0]
 
 def find_chat_with_user(user_id, access_token):
-    """Find existing chat with a user"""
-    url = f"https://graph.microsoft.com/v1.0/users/{user_id}/chats"
+    """Find existing chat with a user using the correct filter for admin-installed bots"""
+    # Get the Teams App ID from environment or use the bot's app ID
+    teams_app_id = os.environ.get("MicrosoftAppId")  # This is the Teams App ID
+    
+    url = f"https://graph.microsoft.com/v1.0/users/{user_id}/chats?$filter=installedApps/any(a:a/teamsApp/id eq '{teams_app_id}')"
     headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
     print(f"[DEBUG] Finding existing chats for user_id: {user_id}")
+    print(f"[DEBUG] Using Teams App ID: {teams_app_id}")
+    print(f"[DEBUG] Full URL: {url}")
     r = requests.get(url, headers=headers)
     print(f"[DEBUG] Find chats response: {r.status_code} {r.text}")
     
     if r.status_code == 200:
         chats = r.json().get("value", [])
-        # Look for one-on-one chats
+        # Look for one-on-one chats with our bot installed
         for chat in chats:
             if chat.get("chatType") == "oneOnOne":
                 print(f"[DEBUG] Found existing one-on-one chat: {chat['id']}")
@@ -77,14 +82,21 @@ def create_chat_with_user(user_id, access_token):
         ]
     }
     print(f"[DEBUG] Creating chat with user_id: {user_id}")
+    print(f"[DEBUG] Create chat request data: {json.dumps(data, indent=2)}")
     r = requests.post(url, headers=headers, json=data)
     print(f"[DEBUG] Create chat response: {r.status_code} {r.text}")
-    r.raise_for_status()
-    return r.json()["id"]
+    
+    if r.status_code == 201:  # Created successfully
+        chat_data = r.json()
+        print(f"[DEBUG] Chat created successfully: {chat_data}")
+        return chat_data["id"]
+    else:
+        print(f"[ERROR] Failed to create chat: {r.status_code} {r.text}")
+        r.raise_for_status()
 
 def get_or_create_chat_with_user(user_id, access_token):
     """Get existing chat or create new one with user"""
-    # First try to find existing chat
+    # First try to find existing chat with the correct filter
     existing_chat_id = find_chat_with_user(user_id, access_token)
     if existing_chat_id:
         print(f"[DEBUG] Using existing chat: {existing_chat_id}")
@@ -124,10 +136,19 @@ def send_card_message_to_chat(chat_id, user_name, message, access_token):
         ]
     }
     print(f"[DEBUG] Sending card message to chat_id: {chat_id}")
+    print(f"[DEBUG] Encoded chat_id: {encoded_chat_id}")
+    print(f"[DEBUG] Full URL: {url}")
+    print(f"[DEBUG] Message data: {json.dumps(data, indent=2)}")
     r = requests.post(url, headers=headers, json=data)
     print(f"[DEBUG] Send card message response: {r.status_code} {r.text}")
-    r.raise_for_status()
-    return r.json()
+    
+    if r.status_code == 201:  # Created successfully
+        message_data = r.json()
+        print(f"[DEBUG] Message sent successfully: {message_data}")
+        return message_data
+    else:
+        print(f"[ERROR] Failed to send message: {r.status_code} {r.text}")
+        r.raise_for_status()
 
 def send_text_message_to_chat(chat_id, message, access_token):
     """Send a simple text message to a chat"""
@@ -146,5 +167,84 @@ def send_text_message_to_chat(chat_id, message, access_token):
     print(f"[DEBUG] Message content: {message}")
     r = requests.post(url, headers=headers, json=data)
     print(f"[DEBUG] Send text message response: {r.status_code} {r.text}")
+    r.raise_for_status()
+    return r.json()
+
+def send_teams_activity_message(user_id, message, access_token):
+    """Send a message using Teams Activity API as alternative approach"""
+    url = "https://graph.microsoft.com/v1.0/teams/activity/send"
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+    
+    # Create adaptive card content
+    card_content = {
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        "type": "AdaptiveCard",
+        "version": "1.4",
+        "body": [
+            {
+                "type": "TextBlock",
+                "text": f"Hello! 👋",
+                "weight": "bolder",
+                "size": "large",
+                "color": "accent"
+            },
+            {
+                "type": "TextBlock",
+                "text": message,
+                "wrap": True,
+                "spacing": "medium"
+            },
+            {
+                "type": "FactSet",
+                "facts": [
+                    {
+                        "title": "Sent via:",
+                        "value": "Teams Activity API 📡"
+                    },
+                    {
+                        "title": "Timestamp:",
+                        "value": f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} 🕐"
+                    }
+                ],
+                "spacing": "medium"
+            }
+        ],
+        "actions": [
+            {
+                "type": "Action.Submit",
+                "title": "Reply with 'Hello Bot!' 👋",
+                "data": {
+                    "action": "reply",
+                    "message": "Hello Bot!"
+                }
+            }
+        ]
+    }
+    
+    data = {
+        "topic": {
+            "source": "entityUrl",
+            "value": f"https://graph.microsoft.com/v1.0/users/{user_id}"
+        },
+        "activityType": "taskCreated",
+        "previewText": {
+            "content": message[:100] + "..." if len(message) > 100 else message
+        },
+        "recipient": {
+            "@odata.type": "microsoft.graph.aadUserConversationMember",
+            "user@odata.bind": f"https://graph.microsoft.com/v1.0/users/{user_id}"
+        },
+        "templateParameters": [
+            {
+                "name": "cardContent",
+                "value": json.dumps(card_content)
+            }
+        ]
+    }
+    
+    print(f"[DEBUG] Sending Teams activity to user_id: {user_id}")
+    print(f"[DEBUG] Teams activity data: {json.dumps(data, indent=2)}")
+    r = requests.post(url, headers=headers, json=data)
+    print(f"[DEBUG] Teams activity response: {r.status_code} {r.text}")
     r.raise_for_status()
     return r.json() 
