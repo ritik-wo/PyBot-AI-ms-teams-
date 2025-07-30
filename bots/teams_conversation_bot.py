@@ -250,8 +250,7 @@ class TeamsConversationBot(TeamsActivityHandler):
     async def _delete_card_activity(self, turn_context: TurnContext):
         await turn_context.delete_activity(turn_context.activity.reply_to_id)
 
-    async def send_message_to_all_members(self, message: str):
-        from app import ADAPTER  # Avoid circular import at top
+    async def send_message_to_all_members(self, message: str, adapter=None):
         global CONVERSATION_REFERENCE
         if not CONVERSATION_REFERENCE:
             print("[ERROR] No conversation reference available. Have a user interact with the bot first.")
@@ -278,4 +277,9 @@ class TeamsConversationBot(TeamsActivityHandler):
             except Exception as e:
                 print(f"[ERROR] Failed to send proactive messages: {e}")
 
-        await ADAPTER.continue_conversation(CONVERSATION_REFERENCE, logic, self._app_id)
+        # Use the passed adapter or get it from the global scope if available
+        if adapter:
+            await adapter.continue_conversation(CONVERSATION_REFERENCE, logic, self._app_id)
+        else:
+            # This will be handled by the calling code in app.py
+            print("[WARNING] No adapter provided, this method should be called from app.py")
