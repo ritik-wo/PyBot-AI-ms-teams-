@@ -71,6 +71,11 @@ def create_chat_with_user(user_id, access_token):
     """Create a new chat with a user"""
     url = "https://graph.microsoft.com/v1.0/chats"
     headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+    
+    # For one-on-one chats, we need to include the bot as a member
+    # The bot should be added using the application ID
+    bot_app_id = os.environ.get("MicrosoftAppId")
+    
     data = {
         "chatType": "oneOnOne",
         "members": [
@@ -78,21 +83,47 @@ def create_chat_with_user(user_id, access_token):
                 "@odata.type": "#microsoft.graph.aadUserConversationMember",
                 "roles": ["owner"],
                 "user@odata.bind": f"https://graph.microsoft.com/v1.0/users('{user_id}')"
+            },
+            {
+                "@odata.type": "#microsoft.graph.teamsAppInstallationConversationMember",
+                "roles": ["owner"],
+                "teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps('{bot_app_id}')"
             }
         ]
     }
-    print(f"[DEBUG] Creating chat with user_id: {user_id}")
-    print(f"[DEBUG] Create chat request data: {json.dumps(data, indent=2)}")
-    r = requests.post(url, headers=headers, json=data)
-    print(f"[DEBUG] Create chat response: {r.status_code} {r.text}")
+    print(f"[DEBUG] ===== CHAT CREATION ATTEMPT =====")
+    print(f"[DEBUG] Target user_id: {user_id}")
+    print(f"[DEBUG] Bot app ID: {bot_app_id}")
+    print(f"[DEBUG] Request URL: {url}")
+    print(f"[DEBUG] Request headers: {json.dumps(headers, indent=2)}")
+    print(f"[DEBUG] Request data: {json.dumps(data, indent=2)}")
     
-    if r.status_code == 201:  # Created successfully
-        chat_data = r.json()
-        print(f"[DEBUG] Chat created successfully: {chat_data}")
-        return chat_data["id"]
-    else:
-        print(f"[ERROR] Failed to create chat: {r.status_code} {r.text}")
-        r.raise_for_status()
+    try:
+        r = requests.post(url, headers=headers, json=data)
+        print(f"[DEBUG] Response status: {r.status_code}")
+        print(f"[DEBUG] Response headers: {dict(r.headers)}")
+        print(f"[DEBUG] Response body: {r.text}")
+        
+        if r.status_code == 201:  # Created successfully
+            chat_data = r.json()
+            print(f"[DEBUG] ✅ CHAT CREATION SUCCESSFUL")
+            print(f"[DEBUG] Chat ID: {chat_data.get('id')}")
+            print(f"[DEBUG] Chat type: {chat_data.get('chatType')}")
+            print(f"[DEBUG] Chat members: {chat_data.get('members', [])}")
+            return chat_data["id"]
+        else:
+            print(f"[ERROR] ❌ CHAT CREATION FAILED")
+            print(f"[ERROR] Status code: {r.status_code}")
+            print(f"[ERROR] Error response: {r.text}")
+            r.raise_for_status()
+            
+    except Exception as e:
+        print(f"[ERROR] ❌ EXCEPTION DURING CHAT CREATION")
+        print(f"[ERROR] Exception type: {type(e).__name__}")
+        print(f"[ERROR] Exception message: {str(e)}")
+        import traceback
+        print(f"[ERROR] Full traceback: {traceback.format_exc()}")
+        raise
 
 def get_or_create_chat_with_user(user_id, access_token):
     """Get existing chat or create new one with user"""
@@ -135,20 +166,40 @@ def send_card_message_to_chat(chat_id, user_name, message, access_token):
             }
         ]
     }
-    print(f"[DEBUG] Sending card message to chat_id: {chat_id}")
+    print(f"[DEBUG] ===== MESSAGE SENDING ATTEMPT =====")
+    print(f"[DEBUG] Target chat_id: {chat_id}")
     print(f"[DEBUG] Encoded chat_id: {encoded_chat_id}")
-    print(f"[DEBUG] Full URL: {url}")
-    print(f"[DEBUG] Message data: {json.dumps(data, indent=2)}")
-    r = requests.post(url, headers=headers, json=data)
-    print(f"[DEBUG] Send card message response: {r.status_code} {r.text}")
+    print(f"[DEBUG] User name: {user_name}")
+    print(f"[DEBUG] Message content: {message}")
+    print(f"[DEBUG] Request URL: {url}")
+    print(f"[DEBUG] Request headers: {json.dumps(headers, indent=2)}")
+    print(f"[DEBUG] Request data: {json.dumps(data, indent=2)}")
     
-    if r.status_code == 201:  # Created successfully
-        message_data = r.json()
-        print(f"[DEBUG] Message sent successfully: {message_data}")
-        return message_data
-    else:
-        print(f"[ERROR] Failed to send message: {r.status_code} {r.text}")
-        r.raise_for_status()
+    try:
+        r = requests.post(url, headers=headers, json=data)
+        print(f"[DEBUG] Response status: {r.status_code}")
+        print(f"[DEBUG] Response headers: {dict(r.headers)}")
+        print(f"[DEBUG] Response body: {r.text}")
+        
+        if r.status_code == 201:  # Created successfully
+            message_data = r.json()
+            print(f"[DEBUG] ✅ MESSAGE SENDING SUCCESSFUL")
+            print(f"[DEBUG] Message ID: {message_data.get('id')}")
+            print(f"[DEBUG] Message content: {message_data.get('body', {}).get('content')}")
+            return message_data
+        else:
+            print(f"[ERROR] ❌ MESSAGE SENDING FAILED")
+            print(f"[ERROR] Status code: {r.status_code}")
+            print(f"[ERROR] Error response: {r.text}")
+            r.raise_for_status()
+            
+    except Exception as e:
+        print(f"[ERROR] ❌ EXCEPTION DURING MESSAGE SENDING")
+        print(f"[ERROR] Exception type: {type(e).__name__}")
+        print(f"[ERROR] Exception message: {str(e)}")
+        import traceback
+        print(f"[ERROR] Full traceback: {traceback.format_exc()}")
+        raise
 
 def send_text_message_to_chat(chat_id, message, access_token):
     """Send a simple text message to a chat"""
