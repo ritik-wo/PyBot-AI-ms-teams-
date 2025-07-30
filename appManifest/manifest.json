@@ -4,7 +4,7 @@
     "version": "2.0.6",
     "id": "585f6c9e-5358-413f-b098-918bb0b4b140",
     "developer": {
-      "name": "PyBot AI",
+      "name": "PyBot AI live",
       "websiteUrl": "https://www.microsoft.com",
       "privacyUrl": "https://www.teams.com/privacy",
       "termsOfUseUrl": "https://www.teams.com/termsofuser"
@@ -14,8 +14,8 @@
       "color": "color.png"
     },
     "name": {
-      "short": "PyBot AI",
-      "full": "PyBot AI"
+      "short": "PyBot AI live",
+      "full": "PyBot AI live"
       
     },
   "description": {
@@ -64,5 +64,5 @@
       "identity",
       "messageTeamMembers"
     ],
-    "validDomains": ["cb3d7be404b3.ngrok-free.app/"]
+    "validDomains": ["pybot-ai-y04m.onrender.com/"]
   }

@@ -371,7 +371,7 @@ async def send_message_to_all(req: Request) -> Response:
     return json_response({"status": "Message sent to all members"})
 
 
-# Update the endpoint to use Bot Framework proactive messaging (simplified approach)
+# Update the endpoint to use Microsoft Graph API (works for any user)
 async def send_message_to_user(req: Request) -> Response:
     data = await req.json()
     email = data.get("email")
@@ -382,7 +382,7 @@ async def send_message_to_user(req: Request) -> Response:
     try:
         print(f"[DEBUG] Starting send_message_to_user for {email}")
         
-        # Get fresh access token to find user
+        # Get fresh access token with all permissions
         access_token = get_fresh_graph_access_token()
         
         # Find the user by email
@@ -392,100 +392,23 @@ async def send_message_to_user(req: Request) -> Response:
         
         print(f"[DEBUG] Found user: {user.get('displayName', email)} with ID: {user['id']}")
         
-        # Import the global conversation reference from the bot
-        from bots.teams_conversation_bot import CONVERSATION_REFERENCE
+        # Create or find existing chat with the user using Graph API
+        chat_id = get_or_create_chat_with_user(user["id"], access_token)
+        if not chat_id:
+            return json_response({"error": f"Could not find or create chat for user {email}"}, status=500)
         
-        if not CONVERSATION_REFERENCE:
-            return json_response({"error": "No conversation reference available. Have a user interact with the bot first in Teams."}, status=400)
+        print(f"[DEBUG] Using chat_id: {chat_id}")
         
-        # Use Bot Framework's proactive messaging to create a new conversation
-        from botbuilder.schema import ConversationParameters, ChannelAccount
-        from botbuilder.core import MessageFactory, CardFactory
+        # Send adaptive card message using Graph API
+        send_card_message_to_chat(chat_id, user.get("displayName", email), message, access_token)
+        print(f"[DEBUG] Successfully sent adaptive card to {email}")
         
-        async def send_to_user_logic(turn_context):
-            try:
-                print(f"[DEBUG] Creating conversation with user: {user.get('displayName', email)}")
-                
-                # Create a channel account for the target user
-                target_user = ChannelAccount(
-                    id=user['id'],
-                    name=user.get('displayName', email)
-                )
-                
-                # Create conversation parameters
-                conversation_parameters = ConversationParameters(
-                    is_group=False,
-                    bot=turn_context.activity.recipient,
-                    members=[target_user],
-                    tenant_id=turn_context.activity.conversation.tenant_id,
-                )
-                
-                # Create adaptive card
-                adaptive_card = {
-                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-                    "type": "AdaptiveCard",
-                    "version": "1.4",
-                    "body": [
-                        {
-                            "type": "TextBlock",
-                            "text": f"Hello {user.get('displayName', email)}! 👋",
-                            "weight": "bolder",
-                            "size": "large",
-                            "color": "accent"
-                        },
-                        {
-                            "type": "TextBlock",
-                            "text": message,
-                            "wrap": True,
-                            "spacing": "medium"
-                        },
-                        {
-                            "type": "FactSet",
-                            "facts": [
-                                {
-                                    "title": "Sent via:",
-                                    "value": "Bot Framework API 📡"
-                                },
-                                {
-                                    "title": "Timestamp:",
-                                    "value": f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} 🕐"
-                                }
-                            ],
-                            "spacing": "medium"
-                        }
-                    ],
-                    "actions": [
-                        {
-                            "type": "Action.Submit",
-                            "title": "Reply with 'Hello Bot!' 👋",
-                            "data": {
-                                "action": "reply",
-                                "message": "Hello Bot!"
-                            }
-                        }
-                    ]
-                }
-                
-                # Send the adaptive card
-                async def send_message(tc):
-                    await tc.send_activity(MessageFactory.attachment(CardFactory.adaptive_card(adaptive_card)))
-                    print(f"[DEBUG] Successfully sent adaptive card to {email}")
-                
-                await turn_context.adapter.create_conversation(
-                    CONVERSATION_REFERENCE,
-                    send_message,
-                    conversation_parameters
-                )
-                
-            except Exception as e:
-                print(f"[ERROR] Failed to send message to {email}: {e}")
-                import traceback
-                traceback.print_exc()
-        
-        # Execute the proactive messaging
-        await ADAPTER.continue_conversation(CONVERSATION_REFERENCE, send_to_user_logic, CONFIG.APP_ID)
-        
-        return json_response({"status": f"Adaptive card sent to {email}", "method": "bot_framework"})
+        return json_response({
+            "status": f"Adaptive card sent to {email}", 
+            "method": "graph_api",
+            "chat_id": chat_id,
+            "user_id": user["id"]
+        })
         
     except Exception as e:
         print(f"[ERROR] Failed to send message to {email}: {e}")
