@@ -1,0 +1,361 @@
+
+{
+    "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.5",
+    "body": [
+      {
+        "type": "TextBlock",
+        "text": "New Progress items assigned to you",
+        "wrap": true,
+        "weight": "Bolder",
+        "size": "Large"
+      },
+      {
+        "type": "TextBlock",
+        "text": "Sales Department Progress",
+        "wrap": true,
+        "weight": "Bolder",
+        "spacing": "Small"
+      },
+      {
+        "type": "ColumnSet",
+        "spacing": "Small",
+        "columns": [
+          {
+            "type": "Column",
+            "width": "auto",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "Tue 27. January 2026  10:00 – 12:00",
+                "wrap": true,
+                "spacing": "None",
+                "isSubtle": true
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "width": "stretch",
+            "horizontalAlignment": "Right",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "📅 Feb26    2 / 6",
+                "wrap": true,
+                "horizontalAlignment": "Right"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Container",
+        "spacing": "Medium",
+        "separator": true,
+        "items": [
+          {
+            "type": "ColumnSet",
+            "columns": [
+              {
+                "type": "Column",
+                "width": "stretch",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "**Progress item**",
+                    "wrap": true,
+                    "weight": "Bolder"
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "**Type**",
+                    "wrap": true,
+                    "weight": "Bolder"
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "**Due date**",
+                    "wrap": true,
+                    "weight": "Bolder"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Container",
+        "separator": true,
+        "items": [
+          {
+            "type": "ColumnSet",
+            "spacing": "Small",
+            "columns": [
+              {
+                "type": "Column",
+                "width": "stretch",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "Some tasks",
+                    "wrap": true
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "👍 Agreement",
+                    "wrap": true
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "01.02. ✅",
+                    "wrap": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Container",
+        "separator": true,
+        "items": [
+          {
+            "type": "ColumnSet",
+            "spacing": "Small",
+            "columns": [
+              {
+                "type": "Column",
+                "width": "stretch",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "Some tasks",
+                    "wrap": true
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "💎 Decision",
+                    "wrap": true
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "01.02. ✅",
+                    "wrap": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Container",
+        "separator": true,
+        "items": [
+          {
+            "type": "ColumnSet",
+            "spacing": "Small",
+            "columns": [
+              {
+                "type": "Column",
+                "width": "stretch",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "Some tasks",
+                    "wrap": true
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "💎 Decision",
+                    "wrap": true
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "01.02. ✅",
+                    "wrap": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Container",
+        "separator": true,
+        "items": [
+          {
+            "type": "ColumnSet",
+            "spacing": "Small",
+            "columns": [
+              {
+                "type": "Column",
+                "width": "stretch",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "Some tasks",
+                    "wrap": true
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "👍 Agreement",
+                    "wrap": true
+                  }
+                ]
+              },
+              {
+                "type": "Column",
+                "width": "auto",
+                "items": [
+                  {
+                    "type": "TextBlock",
+                    "text": "01.02. ✅",
+                    "wrap": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TextBlock",
+        "text": "Details",
+        "weight": "Bolder",
+        "spacing": "Medium",
+        "separator": true
+      },
+      {
+        "type": "FactSet",
+        "facts": [
+          {
+            "title": "Meeting origin:",
+            "value": "📅 Feb26 – 1 / 6 – Sales Department Progress"
+          },
+          {
+            "title": "Meeting date:",
+            "value": "27.01.2026"
+          },
+          {
+            "title": "Relation:",
+            "value": "Gezielte Marketing-Maßnahme…"
+          }
+        ],
+        "separator": true
+      },
+      {
+        "type": "ColumnSet",
+        "spacing": "Small",
+        "columns": [
+          {
+            "type": "Column",
+            "width": "auto",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "Agenda item:",
+                "weight": "Bolder",
+                "wrap": true
+              }
+            ]
+          },
+          {
+            "type": "Column",
+            "width": "stretch",
+            "items": [
+              {
+                "type": "TextBlock",
+                "text": "2. Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
+                "wrap": true
+              }
+            ]
+          }
+        ],
+        "separator": true
+      },
+      {
+        "type": "ActionSet",
+        "spacing": "Padding",
+        "actions": [
+          {
+            "type": "Action.OpenUrl",
+            "title": "Open \"My Items\" in app",
+            "url": "https://example.com"
+          }
+        ],
+        "separator": true
+      },
+      {
+        "type": "TextBlock",
+        "text": "🔔 Erinnerung versendet am 20.06.2025 um 09:00",
+        "wrap": true,
+        "isSubtle": true,
+        "size": "Small",
+        "horizontalAlignment": "Center",
+        "spacing": "Medium",
+        "separator": true,
+        "fontType": "Default"
+      }
+    ]
+  }
+  

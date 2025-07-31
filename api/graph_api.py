@@ -76,6 +76,8 @@ def create_chat_with_user(user_id, access_token):
     # The bot should be added using the application ID
     bot_app_id = os.environ.get("MicrosoftAppId")
     
+    # Try different approaches for adding the bot to the chat
+    # Approach 1: Use the bot's service principal ID (if available)
     data = {
         "chatType": "oneOnOne",
         "members": [
@@ -83,14 +85,32 @@ def create_chat_with_user(user_id, access_token):
                 "@odata.type": "#microsoft.graph.aadUserConversationMember",
                 "roles": ["owner"],
                 "user@odata.bind": f"https://graph.microsoft.com/v1.0/users('{user_id}')"
-            },
-            {
-                "@odata.type": "#microsoft.graph.teamsAppInstallationConversationMember",
-                "roles": ["owner"],
-                "teamsApp@odata.bind": f"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps('{bot_app_id}')"
             }
         ]
     }
+    
+    # Try to add the bot using its service principal if available
+    try:
+        # First, try to get the bot's service principal
+        sp_url = f"https://graph.microsoft.com/v1.0/servicePrincipals?$filter=appId eq '{bot_app_id}'"
+        sp_response = requests.get(sp_url, headers=headers)
+        if sp_response.status_code == 200:
+            sp_data = sp_response.json()
+            if sp_data.get('value'):
+                bot_sp_id = sp_data['value'][0]['id']
+                data["members"].append({
+                    "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                    "roles": ["owner"],
+                    "user@odata.bind": f"https://graph.microsoft.com/v1.0/users('{bot_sp_id}')"
+                })
+                print(f"[DEBUG] Added bot service principal: {bot_sp_id}")
+            else:
+                print(f"[DEBUG] No service principal found for bot app ID: {bot_app_id}")
+        else:
+            print(f"[DEBUG] Failed to get service principal: {sp_response.status_code}")
+    except Exception as e:
+        print(f"[DEBUG] Error getting service principal: {e}")
+    
     print(f"[DEBUG] ===== CHAT CREATION ATTEMPT =====")
     print(f"[DEBUG] Target user_id: {user_id}")
     print(f"[DEBUG] Bot app ID: {bot_app_id}")
@@ -115,7 +135,10 @@ def create_chat_with_user(user_id, access_token):
             print(f"[ERROR] ❌ CHAT CREATION FAILED")
             print(f"[ERROR] Status code: {r.status_code}")
             print(f"[ERROR] Error response: {r.text}")
-            r.raise_for_status()
+            
+            # If chat creation fails, we'll need to use a different approach
+            # The bot needs to be installed in Teams first
+            raise Exception(f"Chat creation failed: {r.text}")
             
     except Exception as e:
         print(f"[ERROR] ❌ EXCEPTION DURING CHAT CREATION")
