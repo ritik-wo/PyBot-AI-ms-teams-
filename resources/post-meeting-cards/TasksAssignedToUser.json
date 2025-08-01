@@ -506,7 +506,7 @@
                 },
                 {
                     "type": "ColumnSet",
-                    "spacing": "Small",
+                    "spacing": "None",
                     "columns": [
                         {
                             "type": "Column",
