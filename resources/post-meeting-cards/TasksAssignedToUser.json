@@ -109,10 +109,7 @@
                                     "color": "Default"
                                 }
                             ],
-                            "rtl": false,
-                            "backgroundImage": {
-                                "verticalAlignment": "Bottom"
-                            }
+                            "rtl": false
                         },
                         {
                             "type": "Column",

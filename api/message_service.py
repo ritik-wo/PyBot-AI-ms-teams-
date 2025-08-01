@@ -14,10 +14,60 @@ def load_tasks_assigned_card():
     """Load the TasksAssignedToUser adaptive card template"""
     card_path = os.path.join(os.getcwd(), "resources", "post-meeting-cards", "TasksAssignedToUser.json")
     try:
+        print(f"[DEBUG] ===== LOADING ADAPTIVE CARD =====")
+        print(f"[DEBUG] Card path: {card_path}")
+        
         with open(card_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+            card_content = f.read()
+            print(f"[DEBUG] Raw file content length: {len(card_content)} characters")
+            print(f"[DEBUG] First 200 characters: {card_content[:200]}")
+            
+            # Try to parse JSON
+            adaptive_card = json.loads(card_content)
+            print(f"[DEBUG] ✅ JSON parsing successful")
+            print(f"[DEBUG] Card type: {adaptive_card.get('type', 'unknown')}")
+            print(f"[DEBUG] Card version: {adaptive_card.get('version', 'unknown')}")
+            print(f"[DEBUG] Body items count: {len(adaptive_card.get('body', []))}")
+            
+            # Check for problematic properties
+            problematic_props = []
+            def check_properties(obj, path=""):
+                if isinstance(obj, dict):
+                    for key, value in obj.items():
+                        current_path = f"{path}.{key}" if path else key
+                        if key in ['rtl', 'bleed', 'minHeight', 'backgroundImage', '$schema', 'speak']:
+                            problematic_props.append(f"{current_path}: {value}")
+                        if isinstance(value, (dict, list)):
+                            check_properties(value, current_path)
+                elif isinstance(obj, list):
+                    for i, item in enumerate(obj):
+                        current_path = f"{path}[{i}]"
+                        check_properties(item, current_path)
+            
+            check_properties(adaptive_card)
+            if problematic_props:
+                print(f"[DEBUG] ⚠️ Found potentially problematic properties:")
+                for prop in problematic_props:
+                    print(f"[DEBUG]   - {prop}")
+            else:
+                print(f"[DEBUG] ✅ No problematic properties found")
+            
+            return adaptive_card
+            
+    except json.JSONDecodeError as e:
+        print(f"[ERROR] ❌ JSON parsing failed: {e}")
+        print(f"[ERROR] Error at line {e.lineno}, column {e.colno}")
+        print(f"[ERROR] Error message: {e.msg}")
+        # Show the problematic line
+        lines = card_content.split('\n')
+        if e.lineno <= len(lines):
+            print(f"[ERROR] Problematic line {e.lineno}: {lines[e.lineno-1]}")
+        raise
     except Exception as e:
-        print(f"[ERROR] Failed to load adaptive card template: {e}")
+        print(f"[ERROR] ❌ Failed to load adaptive card template: {e}")
+        print(f"[ERROR] Exception type: {type(e).__name__}")
+        import traceback
+        print(f"[ERROR] Full traceback: {traceback.format_exc()}")
         # Fallback to a simple card if template loading fails
         return {
             "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -131,10 +181,43 @@ async def send_message_to_user_service(email, message, adapter, app_id):
 
 async def send_message_via_bot_framework_with_card(user, adaptive_card, adapter, conversation_reference, app_id):
     """Send the TasksAssignedToUser adaptive card using Bot Framework proactive messaging"""
+    print(f"[DEBUG] ===== BOT FRAMEWORK CARD SENDING =====")
     print(f"[DEBUG] Creating conversation with user: {user.get('displayName', user.get('mail', 'Unknown'))}")
     
     from botbuilder.schema import ConversationParameters, ChannelAccount
     from botbuilder.core import MessageFactory, CardFactory
+    
+    # Log the adaptive card being sent
+    print(f"[DEBUG] Adaptive card type: {type(adaptive_card)}")
+    print(f"[DEBUG] Adaptive card keys: {list(adaptive_card.keys()) if isinstance(adaptive_card, dict) else 'Not a dict'}")
+    print(f"[DEBUG] Card version: {adaptive_card.get('version', 'unknown')}")
+    print(f"[DEBUG] Card body items: {len(adaptive_card.get('body', []))}")
+    
+    # Validate the card structure
+    try:
+        # Try to serialize and deserialize to check for JSON issues
+        card_json = json.dumps(adaptive_card)
+        print(f"[DEBUG] ✅ Card serializes to JSON successfully")
+        print(f"[DEBUG] JSON length: {len(card_json)} characters")
+        
+        # Check for problematic characters
+        problematic_chars = []
+        for i, char in enumerate(card_json):
+            if ord(char) > 127:  # Non-ASCII characters
+                problematic_chars.append(f"Position {i}: '{char}' (U+{ord(char):04X})")
+                if len(problematic_chars) >= 10:  # Limit to first 10
+                    break
+        
+        if problematic_chars:
+            print(f"[DEBUG] ⚠️ Found non-ASCII characters:")
+            for char_info in problematic_chars:
+                print(f"[DEBUG]   - {char_info}")
+        else:
+            print(f"[DEBUG] ✅ No problematic characters found")
+            
+    except Exception as e:
+        print(f"[ERROR] ❌ Card JSON serialization failed: {e}")
+        raise
     
     # Create a channel account for the target user
     target_user = ChannelAccount(
@@ -152,8 +235,27 @@ async def send_message_via_bot_framework_with_card(user, adaptive_card, adapter,
     
     # Send the adaptive card
     async def send_message(turn_context):
-        await turn_context.send_activity(MessageFactory.attachment(CardFactory.adaptive_card(adaptive_card)))
-        print(f"[DEBUG] Successfully sent TasksAssignedToUser card to {user.get('mail', 'Unknown')}")
+        try:
+            print(f"[DEBUG] Creating adaptive card attachment...")
+            attachment = CardFactory.adaptive_card(adaptive_card)
+            print(f"[DEBUG] ✅ Adaptive card attachment created successfully")
+            print(f"[DEBUG] Attachment content type: {attachment.content_type}")
+            print(f"[DEBUG] Attachment content length: {len(str(attachment.content)) if attachment.content else 0}")
+            
+            print(f"[DEBUG] Creating message with attachment...")
+            message = MessageFactory.attachment(attachment)
+            print(f"[DEBUG] ✅ Message created successfully")
+            
+            print(f"[DEBUG] Sending message to Teams...")
+            await turn_context.send_activity(message)
+            print(f"[DEBUG] ✅ Successfully sent TasksAssignedToUser card to {user.get('mail', 'Unknown')}")
+            
+        except Exception as e:
+            print(f"[ERROR] ❌ Failed to send adaptive card: {e}")
+            print(f"[ERROR] Exception type: {type(e).__name__}")
+            import traceback
+            print(f"[ERROR] Full traceback: {traceback.format_exc()}")
+            raise
     
     await adapter.create_conversation(
         conversation_reference,
