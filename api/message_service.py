@@ -6,8 +6,7 @@ from api.graph_api import (
     get_fresh_graph_access_token, 
     find_user_by_email, 
     get_or_create_chat_with_user, 
-    send_card_message_to_chat,
-    send_teams_activity_message
+    send_card_message_to_chat
 )
 from api.bot_framework_api import send_message_via_bot_framework
 
@@ -112,34 +111,15 @@ async def send_message_to_user_service(email, message, adapter, app_id):
                 
             except Exception as graph_error:
                 print(f"[ERROR] ❌ Graph API chat approach failed: {graph_error}")
-                print(f"[DEBUG] 🔄 Trying Teams Activity API as final fallback...")
-                
-                # Final fallback: Teams Activity API
-                try:
-                    print(f"[DEBUG] Using Teams Activity API...")
-                    send_teams_activity_with_card(user["id"], adaptive_card, access_token)
-                    print(f"[DEBUG] ✅ Successfully sent TasksAssignedToUser card via Teams Activity API to {email}")
-                    
-                    return json_response({
-                        "status": f"TasksAssignedToUser card sent to {email} via Teams Activity API", 
-                        "method": "teams_activity_api",
-                        "user_id": user["id"],
-                        "note": "User may need to install the bot in Teams for full functionality"
-                    })
-                    
-                except Exception as teams_activity_error:
-                    print(f"[ERROR] ❌ Teams Activity API approach failed: {teams_activity_error}")
-                    print(f"[DEBUG] ===== FINAL ERROR SUMMARY =====")
-                    print(f"[DEBUG] Bot Framework error: {bot_error}")
-                    print(f"[DEBUG] Graph API error: {graph_error}")
-                    print(f"[DEBUG] Teams Activity API error: {teams_activity_error}")
-                    return json_response({
-                        "error": f"All messaging approaches failed. User may need to interact with the bot first or install it in Teams.",
-                        "bot_error": str(bot_error),
-                        "graph_error": str(graph_error),
-                        "teams_activity_error": str(teams_activity_error),
-                        "recommendation": "Have the user send a message to the bot in Teams first, or install the bot in Teams"
-                    }, status=500)
+                print(f"[DEBUG] ===== FINAL ERROR SUMMARY =====")
+                print(f"[DEBUG] Bot Framework error: {bot_error}")
+                print(f"[DEBUG] Graph API error: {graph_error}")
+                return json_response({
+                    "error": f"Both Bot Framework and Graph API approaches failed. User may need to interact with the bot first.",
+                    "bot_error": str(bot_error),
+                    "graph_error": str(graph_error),
+                    "recommendation": "Have the user send a message to the bot in Teams first, or ensure the bot is properly installed in Teams"
+                }, status=500)
         
     except Exception as e:
         print(f"[ERROR] ❌ CRITICAL ERROR in send_message_to_user_service")
@@ -238,40 +218,4 @@ def send_adaptive_card_to_chat(chat_id, adaptive_card, access_token):
         print(f"[ERROR] Exception message: {str(e)}")
         import traceback
         print(f"[ERROR] Full traceback: {traceback.format_exc()}")
-        raise
-
-def send_teams_activity_with_card(user_id, adaptive_card, access_token):
-    """Send the TasksAssignedToUser adaptive card using Teams Activity API"""
-    import requests
-    from datetime import datetime
-    
-    url = "https://graph.microsoft.com/v1.0/teams/activity/send"
-    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
-    
-    data = {
-        "topic": {
-            "source": "entityUrl",
-            "value": f"https://graph.microsoft.com/v1.0/users/{user_id}"
-        },
-        "activityType": "taskCreated",
-        "previewText": {
-            "content": "New Progress items assigned to you"
-        },
-        "recipient": {
-            "@odata.type": "microsoft.graph.aadUserConversationMember",
-            "user@odata.bind": f"https://graph.microsoft.com/v1.0/users/{user_id}"
-        },
-        "templateParameters": [
-            {
-                "name": "cardContent",
-                "value": json.dumps(adaptive_card)
-            }
-        ]
-    }
-    
-    print(f"[DEBUG] Sending Teams activity with TasksAssignedToUser card to user_id: {user_id}")
-    print(f"[DEBUG] Teams activity data: {json.dumps(data, indent=2)}")
-    r = requests.post(url, headers=headers, json=data)
-    print(f"[DEBUG] Teams activity response: {r.status_code} {r.text}")
-    r.raise_for_status()
-    return r.json() 
+        raise 
