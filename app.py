@@ -126,11 +126,12 @@ async def send_message_to_user(req: Request) -> Response:
     data = await req.json()
     email = data.get("email")
     message = data.get("message")
+    card_name = data.get("card_name")
     if not email or not message:
         return json_response({"error": "Missing 'email' or 'message' in payload"}, status=400)
     
     # Use the message service to handle the sending logic
-    return await send_message_to_user_service(email, message, ADAPTER, CONFIG.APP_ID)
+    return await send_message_to_user_service(email, message, ADAPTER, CONFIG.APP_ID, card_name)
 
 
 # Add a root route

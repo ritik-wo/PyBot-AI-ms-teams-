@@ -9,6 +9,7 @@ from api.graph_api import (
     send_card_message_to_chat
 )
 from api.bot_framework_api import send_message_via_bot_framework
+from typing import Optional
 
 def load_tasks_assigned_card():
     """Load the TasksAssignedToUser adaptive card template"""
@@ -88,17 +89,47 @@ def load_tasks_assigned_card():
             ]
         }
 
-async def send_message_to_user_service(email, message, adapter, app_id):
+def load_card_by_name(card_name: str) -> Optional[dict]:
+    """Load an adaptive card template by name from any subfolder in resources/"""
+    import glob
+    import os
+    base_dir = os.path.join(os.getcwd(), "resources")
+    # Search for the card in all subfolders
+    pattern = os.path.join(base_dir, "**", card_name)
+    matches = glob.glob(pattern, recursive=True)
+    if not matches:
+        print(f"[ERROR] Card template '{card_name}' not found in resources/.")
+        return None
+    card_path = matches[0]
+    try:
+        print(f"[DEBUG] Loading card: {card_path}")
+        with open(card_path, "r", encoding="utf-8") as f:
+            card_content = f.read()
+            adaptive_card = json.loads(card_content)
+            return adaptive_card
+    except Exception as e:
+        print(f"[ERROR] Failed to load card '{card_name}': {e}")
+        return None
+
+async def send_message_to_user_service(email, message, adapter, app_id, card_name=None):
     """Main service function to send messages to users using hybrid approach"""
     try:
         print(f"[DEBUG] ===== STARTING MESSAGE SERVICE =====")
         print(f"[DEBUG] Target email: {email}")
-        print(f"[DEBUG] Message content: {message} (will be ignored - sending TasksAssignedToUser card)")
+        print(f"[DEBUG] Message content: {message}")
         print(f"[DEBUG] App ID: {app_id}")
+        print(f"[DEBUG] Card name: {card_name}")
         
-        # Load the adaptive card template
-        adaptive_card = load_tasks_assigned_card()
-        print(f"[DEBUG] ✅ Loaded TasksAssignedToUser adaptive card template")
+        # Load the adaptive card template by name
+        if card_name:
+            adaptive_card = load_card_by_name(card_name)
+            if not adaptive_card:
+                return json_response({"error": f"Card template '{card_name}' not found."}, status=404)
+        else:
+            adaptive_card = load_card_by_name("TasksAssignedToUser.json")
+            if not adaptive_card:
+                return json_response({"error": "Default card template 'TasksAssignedToUser.json' not found."}, status=404)
+        print(f"[DEBUG] ✅ Loaded adaptive card template: {card_name or 'TasksAssignedToUser.json'}")
         
         # Get fresh access token to find user
         print(f"[DEBUG] Getting fresh Graph API access token...")

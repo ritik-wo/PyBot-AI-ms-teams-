@@ -6,7 +6,7 @@
     "body": [
         {
             "type": "TextBlock",
-            "text": "New Progress items assigned to you",
+            "text": "Check-in your progress items for",
             "size": "ExtraLarge",
             "weight": "Bolder",
             "color": "Default",
@@ -28,7 +28,7 @@
         },
         {
             "type": "TextBlock",
-            "text": "Tue 27. January 2026 10:00 – 12:00",
+            "text": "Tue 27. February 2026 10:00 – 12:00",
             "size": "Medium",
             "color": "Default",
             "spacing": "Small",
@@ -46,7 +46,7 @@
                     "items": [
                         {
                             "type": "Badge",
-                            "text": "Feb26",
+                            "text": "Mar26",
                             "size": "Large",
                             "style": "Subtle",
                             "appearance": "Tint",
@@ -60,7 +60,7 @@
                     "items": [
                         {
                             "type": "TextBlock",
-                            "text": "2 / 6",
+                            "text": "3 / 6",
                             "size": "Small",
                             "weight": "Default",
                             "spacing": "Small"
@@ -709,22 +709,47 @@
             "type": "Container",
             "items": [
                 {
-                    "type": "ActionSet",
-                    "actions": [
+                    "type": "ColumnSet",
+                    "spacing": "None",
+                    "columns": [
                         {
-                            "type": "Action.Submit",
-                            "title": "Open \"My Items\" in app"
+                            "type": "Column",
+                            "width": "auto",
+                            "items": [
+                                {
+                                    "type": "ActionSet",
+                                    "actions": [
+                                        {
+                                            "type": "Action.Submit",
+                                            "title": "Submit",
+                                            "style": "positive"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": "auto",
+                            "items": [
+                                {
+                                    "type": "ActionSet",
+                                    "actions": [
+                                        {
+                                            "type": "Action.OpenUrl",
+                                            "title": "Open \"My Items\" in app",
+                                            "url": "https://your-app-url.com"
+                                        }
+                                    ]
+                                }
+                            ]
                         }
-                    ],
-                    "spacing": "None"
+                    ]
                 }
             ],
-            "horizontalAlignment": "Center",
-            "bleed": true,
             "separator": true,
-            "showBorder": true,
-            "spacing": "None",
-            "roundedCorners": true
+            "bleed": true,
+            "showBorder": true
         },
         {
             "type": "Container",
