@@ -365,3 +365,68 @@ def send_adaptive_card_to_chat(chat_id, adaptive_card, access_token):
             r.raise_for_status()
             
     except Exception as e:
+        print(f"[ERROR] ❌ EXCEPTION DURING ADAPTIVE CARD SENDING")
+        print(f"[ERROR] Exception type: {type(e).__name__}")
+        print(f"[ERROR] Exception message: {str(e)}")
+        import traceback
+        print(f"[ERROR] Full traceback: {traceback.format_exc()}")
+        raise 
+
+# ============================
+# Update card helpers/services
+# ============================
+
+async def update_card_via_bot_framework(activity_id: str, adapter, app_id: str, updated_card: dict, conversation_reference: Optional[dict] = None) -> dict:
+    """Update an existing activity (card) via Bot Framework using the conversation reference."""
+    from botbuilder.core import MessageFactory, CardFactory
+    from botbuilder.schema import ConversationReference as BFConversationReference
+    from bots.teams_conversation_bot import CONVERSATION_REFERENCE as STORED_REFERENCE
+
+    # Resolve conversation reference
+    if conversation_reference:
+        ref = BFConversationReference().deserialize(conversation_reference)
+    else:
+        if not STORED_REFERENCE:
+            raise Exception("No conversation reference available. Provide 'conversation_reference' from the send response.")
+        ref = STORED_REFERENCE
+
+    async def logic(turn_context):
+        attachment = CardFactory.adaptive_card(updated_card)
+        updated_activity = MessageFactory.attachment(attachment)
+        updated_activity.id = activity_id
+        await turn_context.update_activity(updated_activity)
+
+    await adapter.continue_conversation(ref, logic, app_id)
+    return {"status": "updated", "method": "bot_framework", "activity_id": activity_id}
+
+def update_card_via_graph_api(chat_id: str, updated_card: dict, access_token: str) -> dict:
+    """Graph v1.0 cannot modify an existing adaptive card; send a new one and return its id."""
+    message = send_adaptive_card_to_chat(chat_id, updated_card, access_token)
+    return {"status": "sent_new_message", "method": "graph_api", "chat_id": chat_id, "message_id": message.get('id') if isinstance(message, dict) else None}
+
+async def update_card_service(activity_id: Optional[str], chat_id: Optional[str], adapter, app_id: str, card_name: Optional[str] = None, conversation_reference: Optional[dict] = None):
+    """Entry point to update a previously sent card. Uses Bot Framework update when possible."""
+    # Load updated card content
+    updated_card = load_updated_tasks_card(card_name or "TasksAssignedToUserUpdated.json")
+    if not updated_card:
+        return json_response({"error": f"Updated card template '{card_name or 'TasksAssignedToUserUpdated.json'}' not found."}, status=404)
+
+    # Prefer Bot Framework update to replace existing activity
+    if activity_id:
+        try:
+            result = await update_card_via_bot_framework(activity_id, adapter, app_id, updated_card, conversation_reference)
+            return json_response(result)
+        except Exception as e:
+            if not chat_id:
+                return json_response({"error": f"Bot Framework update failed: {str(e)}", "recommendation": "Provide 'chat_id' to send updated card as a new message via Graph API, or include 'conversation_reference' for exact replacement."}, status=400)
+
+    # Fallback: Graph API new message
+    if chat_id:
+        try:
+            access_token = get_fresh_graph_access_token()
+            result = update_card_via_graph_api(chat_id, updated_card, access_token)
+            return json_response(result)
+        except Exception as e:
+            return json_response({"error": f"Graph API failed to send updated card: {str(e)}"}, status=500)
+
+    return json_response({"error": "Provide 'activity_id' (Bot Framework) to replace the existing card, or 'chat_id' (Graph API) to send a new updated message."}, status=400)
