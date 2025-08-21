@@ -294,6 +294,7 @@ async def send_message_via_bot_framework_with_card(user, adaptive_card, adapter,
             # capture the exact conversation reference for future updates
             from botbuilder.core import TurnContext as _TC
             serialized_conversation_reference = _TC.get_conversation_reference(turn_context.activity).serialize()
+            # Note: Do NOT override conversation_reference.activityId here. The reliable id to update is ResourceResponse.id (sent_activity_id), which we return separately.
             print(f"[DEBUG] ✅ Successfully sent TasksAssignedToUser card to {user.get('mail', 'Unknown')}")
             print(f"[DEBUG] ResourceResponse id (activity_id): {sent_activity_id}")
         
@@ -409,41 +410,61 @@ async def update_card_via_bot_framework(activity_id: str, adapter, app_id: str, 
     if not getattr(ref, 'service_url', None):
         raise Exception("BotFrameworkAdapter.send_activity(): service_url can not be None. Use the full 'conversation_reference' from the send response, or ensure the bot has a stored reference by having the user message the bot first.")
 
-    # Choose correct activity id to update. In Teams, BF activity ids are GUID-like. Graph ids are numeric.
-    chosen_activity_id = activity_id
-    try:
-        import re
-        guid_like = re.compile(r"^[0-9a-fA-F-]{16,}$")
-        if not activity_id or not guid_like.match(activity_id):
-            # Prefer the activityId embedded in the conversation reference if provided
-            if conversation_reference and isinstance(conversation_reference, dict):
-                ref_activity_id = conversation_reference.get("activityId") or conversation_reference.get("activity_id")
-                if ref_activity_id and guid_like.match(ref_activity_id):
-                    chosen_activity_id = ref_activity_id
-    except Exception:
-        pass
+    # Choose activity id: strictly use the provided one; if absent, fall back to ref.activityId; if still absent, fail fast
+    ref_activity_id = conversation_reference.get("activityId") if isinstance(conversation_reference, dict) else None
+    chosen_activity_id = activity_id or ref_activity_id
+    if not chosen_activity_id:
+        raise Exception("No activity_id provided and conversation_reference.activityId missing. Cannot update.")
 
     async def logic(turn_context):
         from botbuilder.schema import Activity, ActivityTypes
-        print(f"[DEBUG] Starting update_activity for activity_id={activity_id} chosen_activity_id={chosen_activity_id}")
+        print(f"[DEBUG] Starting update_activity for provided_activity_id={activity_id} ref_activity_id={ref_activity_id} chosen_activity_id={chosen_activity_id}")
         # Build adaptive card attachment
         attachment = CardFactory.adaptive_card(updated_card)
         # Build a full Activity to avoid no-op updates in some channels
-        updated_activity = Activity(
-            type=ActivityTypes.message,
-            attachments=[attachment],
-        )
-        updated_activity.id = chosen_activity_id
-        # Ensure routing fields are set explicitly
-        updated_activity.conversation = turn_context.activity.conversation
-        updated_activity.service_url = turn_context.activity.service_url
-        updated_activity.channel_id = turn_context.activity.channel_id
-        print(f"[DEBUG] Update payload ready. conversation_id={updated_activity.conversation.id if updated_activity.conversation else 'None'} service_url={updated_activity.service_url}")
-        await turn_context.update_activity(updated_activity)
-        print(f"[DEBUG] update_activity invoked successfully for chosen_activity_id={chosen_activity_id}")
+        def build_activity(with_id: str) -> Activity:
+            a = Activity(
+                type=ActivityTypes.message,
+                attachments=[attachment],
+            )
+            a.id = with_id
+            a.conversation = turn_context.activity.conversation
+            a.service_url = turn_context.activity.service_url
+            a.channel_id = turn_context.activity.channel_id
+            return a
+
+        primary_id = chosen_activity_id
+        alternate_id = None
+        if activity_id and ref_activity_id and activity_id != ref_activity_id:
+            # We prefer provided id first; alternate is the ref id
+            primary_id = activity_id
+            alternate_id = ref_activity_id
+        elif not activity_id and ref_activity_id:
+            primary_id = ref_activity_id
+        elif activity_id and not ref_activity_id:
+            primary_id = activity_id
+
+        tried = []
+        last_err = None
+        for attempt_id in [primary_id, alternate_id]:
+            if not attempt_id or attempt_id in tried:
+                continue
+            tried.append(attempt_id)
+            try:
+                act = build_activity(attempt_id)
+                print(f"[DEBUG] Attempting update_activity with id={attempt_id}")
+                await turn_context.update_activity(act)
+                print(f"[DEBUG] update_activity succeeded with id={attempt_id}")
+                return
+            except Exception as e:
+                last_err = e
+                print(f"[WARN] update_activity failed with id={attempt_id}: {e}")
+                continue
+        if last_err:
+            raise last_err
 
     await adapter.continue_conversation(ref, logic, app_id)
-    return {"status": "updated", "method": "bot_framework", "activity_id": activity_id, "used_activity_id": chosen_activity_id}
+    return {"status": "updated", "method": "bot_framework", "activity_id": activity_id, "used_activity_id": chosen_activity_id, "ref_activity_id": ref_activity_id}
 
 def update_card_via_graph_api(chat_id: str, updated_card: dict, access_token: str) -> dict:
     """Graph v1.0 cannot modify an existing adaptive card; send a new one and return its id."""
