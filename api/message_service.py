@@ -385,10 +385,29 @@ async def update_card_via_bot_framework(activity_id: str, adapter, app_id: str, 
     # Resolve conversation reference
     if conversation_reference:
         ref = BFConversationReference().deserialize(conversation_reference)
+        # Merge missing fields from stored reference if available
+        if STORED_REFERENCE:
+            try:
+                if not getattr(ref, 'service_url', None):
+                    ref.service_url = getattr(STORED_REFERENCE, 'service_url', None)
+                if not getattr(ref, 'channel_id', None):
+                    ref.channel_id = getattr(STORED_REFERENCE, 'channel_id', None)
+                if not getattr(ref, 'conversation', None):
+                    ref.conversation = getattr(STORED_REFERENCE, 'conversation', None)
+                if not getattr(ref, 'bot', None):
+                    ref.bot = getattr(STORED_REFERENCE, 'bot', None)
+                if not getattr(ref, 'user', None):
+                    ref.user = getattr(STORED_REFERENCE, 'user', None)
+            except Exception:
+                pass
     else:
         if not STORED_REFERENCE:
             raise Exception("No conversation reference available. Provide 'conversation_reference' from the send response.")
         ref = STORED_REFERENCE
+
+    # Validate required fields
+    if not getattr(ref, 'service_url', None):
+        raise Exception("BotFrameworkAdapter.send_activity(): service_url can not be None. Use the full 'conversation_reference' from the send response, or ensure the bot has a stored reference by having the user message the bot first.")
 
     async def logic(turn_context):
         attachment = CardFactory.adaptive_card(updated_card)
