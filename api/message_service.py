@@ -409,14 +409,41 @@ async def update_card_via_bot_framework(activity_id: str, adapter, app_id: str, 
     if not getattr(ref, 'service_url', None):
         raise Exception("BotFrameworkAdapter.send_activity(): service_url can not be None. Use the full 'conversation_reference' from the send response, or ensure the bot has a stored reference by having the user message the bot first.")
 
+    # Choose correct activity id to update. In Teams, BF activity ids are GUID-like. Graph ids are numeric.
+    chosen_activity_id = activity_id
+    try:
+        import re
+        guid_like = re.compile(r"^[0-9a-fA-F-]{16,}$")
+        if not activity_id or not guid_like.match(activity_id):
+            # Prefer the activityId embedded in the conversation reference if provided
+            if conversation_reference and isinstance(conversation_reference, dict):
+                ref_activity_id = conversation_reference.get("activityId") or conversation_reference.get("activity_id")
+                if ref_activity_id and guid_like.match(ref_activity_id):
+                    chosen_activity_id = ref_activity_id
+    except Exception:
+        pass
+
     async def logic(turn_context):
+        from botbuilder.schema import Activity, ActivityTypes
+        print(f"[DEBUG] Starting update_activity for activity_id={activity_id} chosen_activity_id={chosen_activity_id}")
+        # Build adaptive card attachment
         attachment = CardFactory.adaptive_card(updated_card)
-        updated_activity = MessageFactory.attachment(attachment)
-        updated_activity.id = activity_id
+        # Build a full Activity to avoid no-op updates in some channels
+        updated_activity = Activity(
+            type=ActivityTypes.message,
+            attachments=[attachment],
+        )
+        updated_activity.id = chosen_activity_id
+        # Ensure routing fields are set explicitly
+        updated_activity.conversation = turn_context.activity.conversation
+        updated_activity.service_url = turn_context.activity.service_url
+        updated_activity.channel_id = turn_context.activity.channel_id
+        print(f"[DEBUG] Update payload ready. conversation_id={updated_activity.conversation.id if updated_activity.conversation else 'None'} service_url={updated_activity.service_url}")
         await turn_context.update_activity(updated_activity)
+        print(f"[DEBUG] update_activity invoked successfully for chosen_activity_id={chosen_activity_id}")
 
     await adapter.continue_conversation(ref, logic, app_id)
-    return {"status": "updated", "method": "bot_framework", "activity_id": activity_id}
+    return {"status": "updated", "method": "bot_framework", "activity_id": activity_id, "used_activity_id": chosen_activity_id}
 
 def update_card_via_graph_api(chat_id: str, updated_card: dict, access_token: str) -> dict:
     """Graph v1.0 cannot modify an existing adaptive card; send a new one and return its id."""
