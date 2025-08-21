@@ -67,6 +67,7 @@ def load_tasks_assigned_card():
     except Exception as e:
         print(f"[ERROR] ❌ Failed to load adaptive card template: {e}")
         print(f"[ERROR] Exception type: {type(e).__name__}")
+        print(f"[ERROR] Exception message: {str(e)}")
         import traceback
         print(f"[ERROR] Full traceback: {traceback.format_exc()}")
         # Fallback to a simple card if template loading fails
@@ -111,7 +112,11 @@ def load_card_by_name(card_name: str) -> Optional[dict]:
         print(f"[ERROR] Failed to load card '{card_name}': {e}")
         return None
 
-async def send_message_to_user_service(email, message, adapter, app_id, card_name=None):
+def load_updated_tasks_card(default_name: str = "TasksAssignedToUserUpdated.json") -> Optional[dict]:
+    """Convenience loader for the updated TasksAssigned card template."""
+    return load_card_by_name(default_name)
+
+async def send_message_to_user_service(email, message, adapter, app_id, card_name=None, conversation_reference: Optional[dict] = None):
     """Main service function to send messages to users using hybrid approach"""
     try:
         print(f"[DEBUG] ===== STARTING MESSAGE SERVICE =====")
@@ -180,14 +185,15 @@ async def send_message_to_user_service(email, message, adapter, app_id, card_nam
                 
                 print(f"[DEBUG] Sending TasksAssignedToUser adaptive card...")
                 # Send the adaptive card using Graph API
-                send_adaptive_card_to_chat(chat_id, adaptive_card, access_token)
+                message_data = send_adaptive_card_to_chat(chat_id, adaptive_card, access_token)
                 print(f"[DEBUG] ✅ Successfully sent TasksAssignedToUser card to {email}")
                 
                 return json_response({
                     "status": f"TasksAssignedToUser card sent to {email}", 
                     "method": "graph_api",
                     "chat_id": chat_id,
-                    "user_id": user["id"]
+                    "user_id": user["id"],
+                    "message_id": message_data.get('id') if isinstance(message_data, dict) else None
                 })
                 
             except Exception as graph_error:
@@ -265,6 +271,9 @@ async def send_message_via_bot_framework_with_card(user, adaptive_card, adapter,
     )
     
     # Send the adaptive card
+    sent_activity_id = None
+    conversation_id = None
+    serialized_conversation_reference = None
     async def send_message(turn_context):
         try:
             print(f"[DEBUG] Creating adaptive card attachment...")
@@ -278,9 +287,16 @@ async def send_message_via_bot_framework_with_card(user, adaptive_card, adapter,
             print(f"[DEBUG] ✅ Message created successfully")
             
             print(f"[DEBUG] Sending message to Teams...")
-            await turn_context.send_activity(message)
+            rr = await turn_context.send_activity(message)
+            nonlocal sent_activity_id, conversation_id, serialized_conversation_reference
+            sent_activity_id = getattr(rr, 'id', None)
+            conversation_id = turn_context.activity.conversation.id if turn_context and turn_context.activity and turn_context.activity.conversation else None
+            # capture the exact conversation reference for future updates
+            from botbuilder.core import TurnContext as _TC
+            serialized_conversation_reference = _TC.get_conversation_reference(turn_context.activity).serialize()
             print(f"[DEBUG] ✅ Successfully sent TasksAssignedToUser card to {user.get('mail', 'Unknown')}")
-            
+            print(f"[DEBUG] ResourceResponse id (activity_id): {sent_activity_id}")
+        
         except Exception as e:
             print(f"[ERROR] ❌ Failed to send adaptive card: {e}")
             print(f"[ERROR] Exception type: {type(e).__name__}")
@@ -297,7 +313,10 @@ async def send_message_via_bot_framework_with_card(user, adaptive_card, adapter,
     return {
         "status": f"TasksAssignedToUser card sent to {user.get('mail', 'Unknown')}", 
         "method": "bot_framework",
-        "user_id": user["id"]
+        "user_id": user["id"],
+        "activity_id": sent_activity_id,
+        "conversation_id": conversation_id,
+        "conversation_reference": serialized_conversation_reference
     }
 
 def send_adaptive_card_to_chat(chat_id, adaptive_card, access_token):
@@ -346,9 +365,3 @@ def send_adaptive_card_to_chat(chat_id, adaptive_card, access_token):
             r.raise_for_status()
             
     except Exception as e:
-        print(f"[ERROR] ❌ EXCEPTION DURING ADAPTIVE CARD SENDING")
-        print(f"[ERROR] Exception type: {type(e).__name__}")
-        print(f"[ERROR] Exception message: {str(e)}")
-        import traceback
-        print(f"[ERROR] Full traceback: {traceback.format_exc()}")
-        raise 

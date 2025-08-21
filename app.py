@@ -25,7 +25,7 @@ import os
 from pathlib import Path
 
 # Import the message service
-from api.message_service import send_message_to_user_service
+from api.message_service import send_message_to_user_service, update_card_service
 
 # Explicitly load the .env file from the project root
 load_dotenv(dotenv_path=Path('.') / '.env')
@@ -142,6 +142,18 @@ APP = web.Application(middlewares=[aiohttp_error_middleware])
 APP.router.add_post("/api/messages", messages)
 APP.router.add_post("/api/send-message-to-all", send_message_to_all)
 APP.router.add_post("/api/send-message-to-user", send_message_to_user)
+ 
+async def update_card(req: Request) -> Response:
+    data = await req.json()
+    activity_id = data.get("activity_id")
+    chat_id = data.get("chat_id")
+    card_name = data.get("card_name")  # Optional override, defaults to TasksAssignedToUserUpdated.json
+    conversation_reference = data.get("conversation_reference")  # Optional, preferred for exact replace
+    if not activity_id and not chat_id:
+        return json_response({"error": "Provide either 'activity_id' (Bot Framework) or 'chat_id' (Graph API)."}, status=400)
+    return await update_card_service(activity_id, chat_id, ADAPTER, CONFIG.APP_ID, card_name, conversation_reference)
+
+APP.router.add_post("/api/update-card", update_card)
 APP.router.add_get("/", root)
 
 if __name__ == "__main__":
