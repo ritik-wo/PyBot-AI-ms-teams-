@@ -153,22 +153,6 @@
                             {
                                 "elementId": "details4",
                                 "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight1",
-                                "isVisible": true
-                            },
-                            {
-                                "elementId": "ChevronRight2",
-                                "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight3",
-                                "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight4",
-                                "isVisible": false
                             }
                         ]
                     },
@@ -183,18 +167,6 @@
                                         {
                                             "type": "ColumnSet",
                                             "columns": [
-                                                {
-                                                    "type": "Column",
-                                                    "width": "auto",
-                                                    "items": [
-                                                        {
-                                                            "type": "Icon",
-                                                            "id": "ChevronRight1",
-                                                            "name": "CaretRight",
-                                                            "size": "xSmall"
-                                                        }
-                                                    ]
-                                                },
                                                 {
                                                     "type": "Column",
                                                     "width": "stretch",
@@ -228,7 +200,7 @@
                                                     "items": [
                                                         {
                                                             "type": "Icon",
-                                                            "name": "ThumbLike",
+                                                            "name": "CheckmarkStarburst",
                                                             "size": "xxSmall",
                                                             "spacing": "Small"
                                                         }
@@ -293,6 +265,207 @@
                 },
                 {
                     "type": "Container",
+                    "style": "emphasis",
+                    "id": "details1",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "Details1",
+                            "size": "Medium",
+                            "weight": "Bolder",
+                            "spacing": "None"
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Meeting origin",
+                                            "size": "Small",
+                                            "isSubtle": true,
+                                            "spacing": "None"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "Small",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Calendar",
+                                                            "size": "xSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Feb26 – 1 / 6 – Sales Department Progress",
+                                                            "size": "Small",
+                                                            "wrap": true
+                                                        }
+                                                    ],
+                                                    "spacing": "ExtraSmall"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Meeting date",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "27.01.2026",
+                                            "size": "Small"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Agenda item",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Top"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
+                                                            "size": "Small",
+                                                            "wrap": true
+                                                        }
+                                                    ],
+                                                    "verticalContentAlignment": "Top"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Relation",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "Small",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Target",
+                                                            "size": "xSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Gezielte Marketing-Maßnahme...",
+                                                            "size": "Small",
+                                                            "wrap": true,
+                                                            "spacing": "None"
+                                                        }
+                                                    ],
+                                                    "spacing": "ExtraSmall"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        }
+                    ],
+                    "isVisible": false,
+                    "separator": true
+                },
+                {
+                    "type": "Container",
                     "separator": true,
                     "spacing": "Small",
                     "selectAction": {
@@ -313,22 +486,6 @@
                             {
                                 "elementId": "details4",
                                 "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight1",
-                                "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight2",
-                                "isVisible": true
-                            },
-                            {
-                                "elementId": "ChevronRight3",
-                                "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight4",
-                                "isVisible": false
                             }
                         ]
                     },
@@ -343,19 +500,6 @@
                                         {
                                             "type": "ColumnSet",
                                             "columns": [
-                                                {
-                                                    "type": "Column",
-                                                    "width": "auto",
-                                                    "items": [
-                                                        {
-                                                            "type": "Icon",
-                                                            "id": "ChevronRight2",
-                                                            "name": "CaretRight",
-                                                            "size": "xSmall",
-                                                            "isVisible": false
-                                                        }
-                                                    ]
-                                                },
                                                 {
                                                     "type": "Column",
                                                     "width": "stretch",
@@ -387,7 +531,7 @@
                                                     "items": [
                                                         {
                                                             "type": "Icon",
-                                                            "name": "Maximize",
+                                                            "name": "Diamond",
                                                             "size": "xxSmall"
                                                         }
                                                     ]
@@ -449,6 +593,207 @@
                 },
                 {
                     "type": "Container",
+                    "style": "emphasis",
+                    "id": "details2",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "Details2",
+                            "size": "Medium",
+                            "weight": "Bolder",
+                            "spacing": "None"
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Meeting origin",
+                                            "size": "Small",
+                                            "isSubtle": true,
+                                            "spacing": "None"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "Small",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Calendar",
+                                                            "size": "xSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Feb26 – 1 / 6 – Sales Department Progress",
+                                                            "size": "Small",
+                                                            "wrap": true
+                                                        }
+                                                    ],
+                                                    "spacing": "ExtraSmall"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Meeting date",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "27.01.2026",
+                                            "size": "Small"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Agenda item",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Top"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
+                                                            "size": "Small",
+                                                            "wrap": true
+                                                        }
+                                                    ],
+                                                    "verticalContentAlignment": "Top"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Relation",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "Small",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Target",
+                                                            "size": "xSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Gezielte Marketing-Maßnahme...",
+                                                            "size": "Small",
+                                                            "wrap": true,
+                                                            "spacing": "None"
+                                                        }
+                                                    ],
+                                                    "spacing": "ExtraSmall"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        }
+                    ],
+                    "separator": true,
+                    "isVisible": false
+                },
+                {
+                    "type": "Container",
                     "separator": true,
                     "spacing": "Small",
                     "selectAction": {
@@ -469,22 +814,6 @@
                             {
                                 "elementId": "details4",
                                 "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight1",
-                                "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight2",
-                                "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight3",
-                                "isVisible": true
-                            },
-                            {
-                                "elementId": "ChevronRight4",
-                                "isVisible": false
                             }
                         ]
                     },
@@ -499,19 +828,6 @@
                                         {
                                             "type": "ColumnSet",
                                             "columns": [
-                                                {
-                                                    "type": "Column",
-                                                    "width": "auto",
-                                                    "items": [
-                                                        {
-                                                            "type": "Icon",
-                                                            "id": "ChevronRight3",
-                                                            "name": "CaretRight",
-                                                            "size": "xSmall",
-                                                            "isVisible": false
-                                                        }
-                                                    ]
-                                                },
                                                 {
                                                     "type": "Column",
                                                     "width": "stretch",
@@ -544,7 +860,7 @@
                                                     "items": [
                                                         {
                                                             "type": "Icon",
-                                                            "name": "ThumbLike",
+                                                            "name": "CheckmarkStarburst",
                                                             "size": "xxSmall",
                                                             "spacing": "Small"
                                                         }
@@ -608,6 +924,207 @@
                 },
                 {
                     "type": "Container",
+                    "style": "emphasis",
+                    "id": "details3",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "Details3",
+                            "size": "Medium",
+                            "weight": "Bolder",
+                            "spacing": "None"
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Meeting origin",
+                                            "size": "Small",
+                                            "isSubtle": true,
+                                            "spacing": "None"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "Small",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Calendar",
+                                                            "size": "xSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Feb26 – 1 / 6 – Sales Department Progress",
+                                                            "size": "Small",
+                                                            "wrap": true
+                                                        }
+                                                    ],
+                                                    "spacing": "ExtraSmall"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Meeting date",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "27.01.2026",
+                                            "size": "Small"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Agenda item",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Top"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
+                                                            "size": "Small",
+                                                            "wrap": true
+                                                        }
+                                                    ],
+                                                    "verticalContentAlignment": "Top"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Relation",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "Small",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Target",
+                                                            "size": "xSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Gezielte Marketing-Maßnahme...",
+                                                            "size": "Small",
+                                                            "wrap": true,
+                                                            "spacing": "None"
+                                                        }
+                                                    ],
+                                                    "spacing": "ExtraSmall"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        }
+                    ],
+                    "separator": true,
+                    "isVisible": false
+                },
+                {
+                    "type": "Container",
                     "separator": true,
                     "spacing": "Small",
                     "selectAction": {
@@ -628,22 +1145,6 @@
                             {
                                 "elementId": "details4",
                                 "isVisible": true
-                            },
-                            {
-                                "elementId": "ChevronRight1",
-                                "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight2",
-                                "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight3",
-                                "isVisible": false
-                            },
-                            {
-                                "elementId": "ChevronRight4",
-                                "isVisible": true
                             }
                         ]
                     },
@@ -658,19 +1159,6 @@
                                         {
                                             "type": "ColumnSet",
                                             "columns": [
-                                                {
-                                                    "type": "Column",
-                                                    "width": "auto",
-                                                    "items": [
-                                                        {
-                                                            "type": "Icon",
-                                                            "id": "ChevronRight4",
-                                                            "name": "CaretRight",
-                                                            "size": "xSmall",
-                                                            "isVisible": false
-                                                        }
-                                                    ]
-                                                },
                                                 {
                                                     "type": "Column",
                                                     "width": "stretch",
@@ -702,7 +1190,7 @@
                                                     "items": [
                                                         {
                                                             "type": "Icon",
-                                                            "name": "Maximize",
+                                                            "name": "Diamond",
                                                             "size": "xxSmall"
                                                         }
                                                     ]
@@ -770,618 +1258,6 @@
         {
             "type": "Container",
             "style": "emphasis",
-            "spacing": "None",
-            "id": "details1",
-            "items": [
-                {
-                    "type": "TextBlock",
-                    "text": "Details1",
-                    "size": "Medium",
-                    "weight": "Bolder",
-                    "spacing": "None"
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Meeting origin",
-                                    "size": "Small",
-                                    "isSubtle": true,
-                                    "spacing": "None"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "ColumnSet",
-                                    "spacing": "Small",
-                                    "columns": [
-                                        {
-                                            "type": "Column",
-                                            "width": "auto",
-                                            "items": [
-                                                {
-                                                    "type": "Icon",
-                                                    "name": "Calendar",
-                                                    "size": "xSmall"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "Column",
-                                            "width": "stretch",
-                                            "items": [
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "Feb26 – 1 / 6 – Sales Department Progress",
-                                                    "size": "Small",
-                                                    "wrap": true
-                                                }
-                                            ],
-                                            "spacing": "ExtraSmall"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Meeting date",
-                                    "size": "Small",
-                                    "isSubtle": true
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "27.01.2026",
-                                    "size": "Small"
-                                }
-                            ]
-                        }
-                    ],
-                    "separator": true
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Agenda item",
-                                    "size": "Small",
-                                    "isSubtle": true
-                                }
-                            ],
-                            "verticalContentAlignment": "Top"
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "ColumnSet",
-                                    "columns": [
-                                        {
-                                            "type": "Column",
-                                            "width": "stretch",
-                                            "items": [
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
-                                                    "size": "Small",
-                                                    "wrap": true
-                                                }
-                                            ],
-                                            "verticalContentAlignment": "Top"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ],
-                    "separator": true
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Relation",
-                                    "size": "Small",
-                                    "isSubtle": true
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "ColumnSet",
-                                    "spacing": "Small",
-                                    "columns": [
-                                        {
-                                            "type": "Column",
-                                            "width": "auto",
-                                            "items": [
-                                                {
-                                                    "type": "Icon",
-                                                    "name": "Target",
-                                                    "size": "xSmall"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "Column",
-                                            "width": "stretch",
-                                            "items": [
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "Gezielte Marketing-Maßnahme...",
-                                                    "size": "Small",
-                                                    "wrap": true,
-                                                    "spacing": "None"
-                                                }
-                                            ],
-                                            "spacing": "ExtraSmall"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ],
-                    "separator": true
-                }
-            ],
-            "showBorder": true,
-            "bleed": true,
-            "separator": true
-        },
-        {
-            "type": "Container",
-            "style": "emphasis",
-            "spacing": "None",
-            "id": "details2",
-            "items": [
-                {
-                    "type": "TextBlock",
-                    "text": "Details2",
-                    "size": "Medium",
-                    "weight": "Bolder",
-                    "spacing": "None"
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Meeting origin",
-                                    "size": "Small",
-                                    "isSubtle": true,
-                                    "spacing": "None"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "ColumnSet",
-                                    "spacing": "Small",
-                                    "columns": [
-                                        {
-                                            "type": "Column",
-                                            "width": "auto",
-                                            "items": [
-                                                {
-                                                    "type": "Icon",
-                                                    "name": "Calendar",
-                                                    "size": "xSmall"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "Column",
-                                            "width": "stretch",
-                                            "items": [
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "Feb26 – 1 / 6 – Sales Department Progress",
-                                                    "size": "Small",
-                                                    "wrap": true
-                                                }
-                                            ],
-                                            "spacing": "ExtraSmall"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Meeting date",
-                                    "size": "Small",
-                                    "isSubtle": true
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "27.01.2026",
-                                    "size": "Small"
-                                }
-                            ]
-                        }
-                    ],
-                    "separator": true
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Agenda item",
-                                    "size": "Small",
-                                    "isSubtle": true
-                                }
-                            ],
-                            "verticalContentAlignment": "Top"
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "ColumnSet",
-                                    "columns": [
-                                        {
-                                            "type": "Column",
-                                            "width": "stretch",
-                                            "items": [
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
-                                                    "size": "Small",
-                                                    "wrap": true
-                                                }
-                                            ],
-                                            "verticalContentAlignment": "Top"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ],
-                    "separator": true
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Relation",
-                                    "size": "Small",
-                                    "isSubtle": true
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "ColumnSet",
-                                    "spacing": "Small",
-                                    "columns": [
-                                        {
-                                            "type": "Column",
-                                            "width": "auto",
-                                            "items": [
-                                                {
-                                                    "type": "Icon",
-                                                    "name": "Target",
-                                                    "size": "xSmall"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "Column",
-                                            "width": "stretch",
-                                            "items": [
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "Gezielte Marketing-Maßnahme...",
-                                                    "size": "Small",
-                                                    "wrap": true,
-                                                    "spacing": "None"
-                                                }
-                                            ],
-                                            "spacing": "ExtraSmall"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ],
-                    "separator": true
-                }
-            ],
-            "showBorder": true,
-            "bleed": true,
-            "separator": true,
-            "isVisible": false
-        },
-        {
-            "type": "Container",
-            "style": "emphasis",
-            "spacing": "None",
-            "id": "details3",
-            "items": [
-                {
-                    "type": "TextBlock",
-                    "text": "Details3",
-                    "size": "Medium",
-                    "weight": "Bolder",
-                    "spacing": "None"
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Meeting origin",
-                                    "size": "Small",
-                                    "isSubtle": true,
-                                    "spacing": "None"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "ColumnSet",
-                                    "spacing": "Small",
-                                    "columns": [
-                                        {
-                                            "type": "Column",
-                                            "width": "auto",
-                                            "items": [
-                                                {
-                                                    "type": "Icon",
-                                                    "name": "Calendar",
-                                                    "size": "xSmall"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "Column",
-                                            "width": "stretch",
-                                            "items": [
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "Feb26 – 1 / 6 – Sales Department Progress",
-                                                    "size": "Small",
-                                                    "wrap": true
-                                                }
-                                            ],
-                                            "spacing": "ExtraSmall"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Meeting date",
-                                    "size": "Small",
-                                    "isSubtle": true
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "27.01.2026",
-                                    "size": "Small"
-                                }
-                            ]
-                        }
-                    ],
-                    "separator": true
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Agenda item",
-                                    "size": "Small",
-                                    "isSubtle": true
-                                }
-                            ],
-                            "verticalContentAlignment": "Top"
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "ColumnSet",
-                                    "columns": [
-                                        {
-                                            "type": "Column",
-                                            "width": "stretch",
-                                            "items": [
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
-                                                    "size": "Small",
-                                                    "wrap": true
-                                                }
-                                            ],
-                                            "verticalContentAlignment": "Top"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ],
-                    "separator": true
-                },
-                {
-                    "type": "ColumnSet",
-                    "spacing": "Small",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": 30,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Relation",
-                                    "size": "Small",
-                                    "isSubtle": true
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": 65,
-                            "items": [
-                                {
-                                    "type": "ColumnSet",
-                                    "spacing": "Small",
-                                    "columns": [
-                                        {
-                                            "type": "Column",
-                                            "width": "auto",
-                                            "items": [
-                                                {
-                                                    "type": "Icon",
-                                                    "name": "Target",
-                                                    "size": "xSmall"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "Column",
-                                            "width": "stretch",
-                                            "items": [
-                                                {
-                                                    "type": "TextBlock",
-                                                    "text": "Gezielte Marketing-Maßnahme...",
-                                                    "size": "Small",
-                                                    "wrap": true,
-                                                    "spacing": "None"
-                                                }
-                                            ],
-                                            "spacing": "ExtraSmall"
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ],
-                    "separator": true
-                }
-            ],
-            "showBorder": true,
-            "bleed": true,
-            "separator": true,
-            "isVisible": false
-        },
-        {
-            "type": "Container",
-            "style": "emphasis",
-            "spacing": "None",
             "id": "details4",
             "items": [
                 {
@@ -1577,8 +1453,6 @@
                     "separator": true
                 }
             ],
-            "showBorder": true,
-            "bleed": true,
             "separator": true,
             "isVisible": false
         },
@@ -1600,53 +1474,32 @@
             "bleed": true,
             "separator": true,
             "showBorder": true,
-            "spacing": "None",
+            "spacing": "Small",
             "roundedCorners": true
-        },
-        {
-            "type": "Container",
-            "items": [
-                {
-                    "type": "ColumnSet",
-                    "columns": [
-                        {
-                            "type": "Column",
-                            "width": "auto",
-                            "items": [
-                                {
-                                    "type": "Icon",
-                                    "name": "Clock",
-                                    "size": "xSmall"
-                                }
-                            ],
-                            "verticalContentAlignment": "Center"
-                        },
-                        {
-                            "type": "Column",
-                            "width": "auto",
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "Erinnerung versendet am 20.06.2025 um 09:00",
-                                    "size": "Default",
-                                    "isSubtle": true,
-                                    "spacing": "Small"
-                                }
-                            ],
-                            "verticalContentAlignment": "Center",
-                            "spacing": "ExtraSmall"
-                        }
-                    ],
-                    "horizontalAlignment": "Center"
-                }
-            ],
-            "separator": true,
-            "spacing": "None",
-            "style": "emphasis",
-            "bleed": true,
-            "showBorder": true
         }
     ],
+                        "selectAction": {
+                        "type": "Action.ToggleVisibility",
+                        "targetElements": [
+                            {
+                                "elementId": "details1",
+                                "isVisible": false
+                            },
+                            {
+                                "elementId": "details2",
+                                "isVisible": false
+                            },
+                            {
+                                "elementId": "details3",
+                                "isVisible": false
+                            },
+                            {
+                                "elementId": "details4",
+                                "isVisible": false
+                            }
+                        ]
+                    },
+    
     "rtl": false,
     "minHeight": "1px",
     "fallbackText": "Date"
