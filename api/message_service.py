@@ -129,8 +129,234 @@ def load_sample_data() -> Optional[dict]:
         print(f"[ERROR] Failed to load sample data: {e}")
         return None
 
-def populate_card_template(template: dict, data: dict) -> dict:
-    """Populate a card template with data by replacing {{placeholder}} syntax"""
+def build_dynamic_card_with_tasks(data: dict) -> dict:
+    """Build dynamic card using task_assigning_card_template.json as base and injecting task sections"""
+    import copy
+    
+    print(f"[DEBUG] Building dynamic card with task injection...")
+    
+    # Load base template (header + footer)
+    base_template = load_card_by_name("task_assigning_card_template.json")
+    if not base_template:
+        print(f"[ERROR] Failed to load base template")
+        return None
+    
+    # Load full template to extract task section
+    full_template = load_card_by_name("TasksAssignedToUser.json")
+    if not full_template:
+        print(f"[ERROR] Failed to load full template for task extraction")
+        return None
+    
+    # Get task count
+    tasks = data.get('tasks', [])
+    task_count = len(tasks)
+    print(f"[DEBUG] Detected {task_count} tasks in data")
+    
+    # Extract task section template
+    task_section_template = extract_task_section_template(full_template)
+    if not task_section_template:
+        print(f"[ERROR] Failed to extract task section template")
+        return None
+    
+    # Build dynamic card
+    dynamic_card = copy.deepcopy(base_template)
+    
+    # Generate task sections and inject them
+    if task_count > 0:
+        task_sections = generate_task_sections(task_section_template, task_count, tasks)
+        inject_task_sections_into_card(dynamic_card, task_sections)
+    
+    # Populate all placeholders
+    populated_card = populate_placeholders(dynamic_card, data)
+    
+    print(f"[DEBUG] ✅ Dynamic card built successfully with {task_count} tasks")
+    return populated_card
+
+def extract_task_section_template(full_template: dict) -> dict:
+    """Extract the complete task section template including table header and task rows"""
+    try:
+        print(f"[DEBUG] Extracting task section template with table structure...")
+        
+        # Look for the table structure in the template
+        def find_table_structure(items):
+            table_elements = []
+            
+            for i, item in enumerate(items):
+                if isinstance(item, dict):
+                    # Look for the table header (ColumnSet with "Progress item", "Type", "Due date")
+                    if (item.get('type') == 'ColumnSet' and 
+                        'Progress item' in str(item)):
+                        print(f"[DEBUG] Found table header at index {i}")
+                        table_elements.append(item)
+                        
+                        # Look for the first task row (Container with tasks[0])
+                        for j in range(i + 1, len(items)):
+                            next_item = items[j]
+                            if (isinstance(next_item, dict) and 
+                                next_item.get('type') == 'Container' and 
+                                'tasks[0]' in str(next_item) and 
+                                'selectAction' in next_item):
+                                print(f"[DEBUG] Found first task row at index {j}")
+                                table_elements.append(next_item)
+                                
+                                # Look for the details container
+                                for k in range(j + 1, len(items)):
+                                    details_item = items[k]
+                                    if (isinstance(details_item, dict) and 
+                                        details_item.get('type') == 'Container' and 
+                                        details_item.get('id') == 'details1'):
+                                        print(f"[DEBUG] Found details container at index {k}")
+                                        table_elements.append(details_item)
+                                        break
+                                break
+                        
+                        if len(table_elements) >= 2:  # At least header + one task row
+                            print(f"[DEBUG] ✅ Found complete table structure with {len(table_elements)} elements")
+                            return table_elements
+                    
+                    # Recursively search in nested items
+                    if 'items' in item:
+                        result = find_table_structure(item['items'])
+                        if result:
+                            return result
+                    
+                    # Also check in body if it exists
+                    if 'body' in item:
+                        result = find_table_structure(item['body'])
+                        if result:
+                            return result
+            
+            return None
+        
+        # Start searching from the body
+        body = full_template.get('body', [])
+        table_structure = find_table_structure(body)
+        
+        if table_structure and len(table_structure) >= 2:
+            # Return the table header and task template
+            return {
+                "table_header": table_structure[0],  # The ColumnSet with headers
+                "task_row_template": table_structure[1],  # The Container with task[0] data
+                "task_details_template": table_structure[2] if len(table_structure) > 2 else None
+            }
+        
+        print(f"[ERROR] Could not find complete table structure in template")
+        return None
+        
+    except Exception as e:
+        print(f"[ERROR] Failed to extract task section template: {e}")
+        return None
+
+def generate_task_sections(task_template: dict, task_count: int, tasks: list) -> list:
+    """Generate table header + N task rows based on template structure and set icons per task."""
+    import copy
+    import json
+    
+    print(f"[DEBUG] Generating table with {task_count} task rows...")
+    
+    if not task_template or not isinstance(task_template, dict):
+        print(f"[ERROR] Invalid task template provided")
+        return []
+    
+    table_sections = []
+    
+    # Add the table header first (only once)
+    if 'table_header' in task_template:
+        table_sections.append(copy.deepcopy(task_template['table_header']))
+        print(f"[DEBUG] Added table header")
+    
+    # Generate task rows
+    task_row_template = task_template.get('task_row_template')
+    task_details_template = task_template.get('task_details_template')
+    
+    if not task_row_template:
+        print(f"[ERROR] No task row template found")
+        return table_sections
+    
+    for i in range(task_count):
+        # Deep copy the task row template
+        task_row = copy.deepcopy(task_row_template)
+        
+        # Convert to string for replacement
+        row_str = json.dumps(task_row)
+        
+        # Replace task[0] with task[i] and details1 with details{i+1}
+        row_str = row_str.replace('tasks[0]', f'tasks[{i}]')
+        row_str = row_str.replace('details1', f'details{i+1}')
+        
+        # Convert back to dict
+        try:
+            updated_row = json.loads(row_str)
+            # Set icon for this row based on task type
+            try:
+                icon_name = get_icon_for_task_type(tasks[i].get('type'))
+                _set_icons_in_subtree(updated_row, icon_name)
+            except Exception:
+                pass
+            # Fix selectAction so this row toggles only its own details container
+            try:
+                _fix_row_toggle_action(updated_row, details_id=f"details{i+1}")
+            except Exception:
+                pass
+            table_sections.append(updated_row)
+        except json.JSONDecodeError as e:
+            print(f"[ERROR] Failed to parse updated task row: {e}")
+            continue
+        
+        # Add the details container if available
+        if task_details_template:
+            task_details = copy.deepcopy(task_details_template)
+            
+            # Convert to string for replacement
+            details_str = json.dumps(task_details)
+            
+            # Replace task[0] with task[i] and details1 with details{i+1}
+            details_str = details_str.replace('tasks[0]', f'tasks[{i}]')
+            details_str = details_str.replace('details1', f'details{i+1}')
+            
+            # Convert back to dict
+            try:
+                updated_details = json.loads(details_str)
+                # Set icon(s) inside the details section as well (if any)
+                try:
+                    icon_name = get_icon_for_task_type(tasks[i].get('type'))
+                    _set_icons_in_subtree(updated_details, icon_name)
+                except Exception:
+                    pass
+                table_sections.append(updated_details)
+            except json.JSONDecodeError as e:
+                print(f"[ERROR] Failed to parse updated task details: {e}")
+                continue
+    
+    print(f"[DEBUG] ✅ Generated table with {len(table_sections)} elements (1 header + {task_count} task rows + details)")
+    return table_sections
+
+def inject_task_sections_into_card(card: dict, task_sections: list):
+    """Inject task sections into card body before the footer"""
+    print(f"[DEBUG] Injecting {len(task_sections)} task sections into card...")
+    
+    body = card.get('body', [])
+    
+    # Find insertion point (before the action button container)
+    insertion_index = len(body) - 1  # Default to before last item
+    
+    for i, item in enumerate(body):
+        if isinstance(item, dict) and item.get('type') == 'Container':
+            # Check if this container has ActionSet (footer)
+            items = item.get('items', [])
+            for sub_item in items:
+                if isinstance(sub_item, dict) and sub_item.get('type') == 'ActionSet':
+                    insertion_index = i
+                    break
+    
+    # Insert task sections at the found position
+    for i, task_section in enumerate(task_sections):
+        body.insert(insertion_index + i, task_section)
+    
+    print(f"[DEBUG] ✅ Task sections injected at position {insertion_index}")
+
+def populate_placeholders(template: dict, data: dict) -> dict:
+    """Populate template placeholders with data"""
     import re
     
     def replace_placeholders(obj):
@@ -172,12 +398,78 @@ def populate_card_template(template: dict, data: dict) -> dict:
         else:
             return obj
     
-    print(f"[DEBUG] Populating template with data...")
+    print(f"[DEBUG] Populating placeholders...")
     populated_card = replace_placeholders(template)
-    print(f"[DEBUG] ✅ Template populated successfully")
+    
+    # Normalize icons globally per request (e.g., CheckmarkCircle -> Info)
+    try:
+        populated_card = replace_icon_names(populated_card, from_name='CheckmarkCircle', to_name='Info')
+    except Exception as _e:
+        print(f"[WARN] Icon normalization skipped due to error: {_e}")
+    
+    print(f"[DEBUG] ✅ Placeholders populated successfully")
     return populated_card
 
-async def send_message_to_user_service(email, message, adapter, app_id, card_name=None, conversation_reference: Optional[dict] = None):
+def get_icon_for_task_type(task_type: str) -> str:
+    """Simple mapping from task type to icon name."""
+    mapping = {
+        'Agreement': 'CheckmarkStarburst',
+        'Decision': 'Diamond',
+        'Issue': 'Info',
+    }
+    return mapping.get(task_type, 'CheckmarkStarburst')
+
+def _set_icons_in_subtree(obj, icon_name: str):
+    """Update Icon elements within a given subtree."""
+    if isinstance(obj, dict):
+        if obj.get('type') == 'Icon' and 'name' in obj and obj['name'] in ['CheckmarkStarburst', 'Diamond', 'Info']:
+            old = obj['name']
+            obj['name'] = icon_name
+            print(f"[DEBUG]   Icon updated: {old} -> {icon_name}")
+        for _, v in obj.items():
+            _set_icons_in_subtree(v, icon_name)
+    elif isinstance(obj, list):
+        for item in obj:
+            _set_icons_in_subtree(item, icon_name)
+
+def _fix_row_toggle_action(row_container: dict, details_id: str):
+    """Ensure the row's selectAction toggles only its own details container.
+    Rewrites any Action.ToggleVisibility targetElements to only target details_id.
+    """
+    def visit(obj):
+        if isinstance(obj, dict):
+            # If this dict is a container with selectAction, normalize it
+            if 'selectAction' in obj and isinstance(obj['selectAction'], dict):
+                sa = obj['selectAction']
+                if sa.get('type') == 'Action.ToggleVisibility':
+                    # Use single target so it toggles only its own details
+                    sa['targetElements'] = [ { 'elementId': details_id } ]
+            # Recurse
+            for _, v in obj.items():
+                visit(v)
+        elif isinstance(obj, list):
+            for item in obj:
+                visit(item)
+    visit(row_container)
+
+def replace_icon_names(obj, from_name: str, to_name: str):
+    """Recursively replace Icon name values from from_name to to_name in a card JSON structure."""
+    if isinstance(obj, dict):
+        if obj.get('type') == 'Icon' and obj.get('name') == from_name:
+            obj['name'] = to_name
+        for k, v in obj.items():
+            obj[k] = replace_icon_names(v, from_name, to_name)
+        return obj
+    elif isinstance(obj, list):
+        return [replace_icon_names(item, from_name, to_name) for item in obj]
+    else:
+        return obj
+
+def populate_card_template(template: dict, data: dict) -> dict:
+    """Legacy function - kept for backward compatibility"""
+    return populate_placeholders(template, data)
+
+async def send_message_to_user_service(email, message, adapter, app_id, card_name=None, conversation_reference: Optional[dict] = None, card_data: Optional[dict] = None):
     """Main service function to send messages to users using hybrid approach"""
     try:
         print(f"[DEBUG] ===== STARTING MESSAGE SERVICE =====")
@@ -186,26 +478,21 @@ async def send_message_to_user_service(email, message, adapter, app_id, card_nam
         print(f"[DEBUG] App ID: {app_id}")
         print(f"[DEBUG] Card name: {card_name}")
         
-        # Load the adaptive card template by name
-        if card_name:
-            card_template = load_card_by_name(card_name)
-            if not card_template:
-                return json_response({"error": f"Card template '{card_name}' not found."}, status=404)
+        # Choose data source: prefer caller-provided card_data, fallback to sample data
+        if card_data and isinstance(card_data, dict):
+            data_source = card_data
+            print(f"[DEBUG] ✅ Using card data from request payload")
         else:
-            card_template = load_card_by_name("TasksAssignedToUser.json")
-            if not card_template:
-                return json_response({"error": "Default card template 'TasksAssignedToUser.json' not found."}, status=404)
-        print(f"[DEBUG] ✅ Loaded adaptive card template: {card_name or 'TasksAssignedToUser.json'}")
+            data_source = load_sample_data()
+            if not data_source:
+                return json_response({"error": "No input data supplied and sampleData.json not found."}, status=404)
+            print("[DEBUG] ✅ Loaded sample data (fallback)")
         
-        # Load sample data for populating the template
-        sample_data = load_sample_data()
-        if not sample_data:
-            return json_response({"error": "Sample data not found. Please ensure sampleData.json exists in resources/"}, status=404)
-        print(f"[DEBUG] ✅ Loaded sample data")
-        
-        # Populate the template with data
-        adaptive_card = populate_card_template(card_template, sample_data)
-        print(f"[DEBUG] ✅ Template populated with dynamic data")
+        # Build dynamic card with task injection
+        adaptive_card = build_dynamic_card_with_tasks(data_source)
+        if not adaptive_card:
+            return json_response({"error": "Failed to build dynamic card with tasks"}, status=500)
+        print(f"[DEBUG] ✅ Dynamic card built with task injection")
         
         # Get fresh access token to find user
         print(f"[DEBUG] Getting fresh Graph API access token...")

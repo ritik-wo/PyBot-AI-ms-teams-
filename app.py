@@ -127,11 +127,31 @@ async def send_message_to_user(req: Request) -> Response:
     email = data.get("email")
     message = data.get("message")
     card_name = data.get("card_name")
+    # Optional: conversation reference (for exact proactive update context)
+    conversation_reference = data.get("conversation_reference")
+
+    # Accept card data in multiple convenient ways:
+    # 1) Explicit key: card_data or data
+    # 2) Inline at root (same format as sampleData.json) alongside email/message
+    card_data = data.get("card_data") or data.get("data")
+    if not card_data:
+        # If the payload itself looks like the card schema, extract it by excluding known control keys
+        possible_keys = {"cardTitle", "departmentName", "meetingTime", "meetingDateTime", "progressIndicator", "badgeText", "progressText", "tasks", "actionButtonText"}
+        if any(k in data for k in possible_keys):
+            card_data = {k: v for k, v in data.items() if k not in {"email", "message", "card_name", "conversation_reference"}}
     if not email or not message:
         return json_response({"error": "Missing 'email' or 'message' in payload"}, status=400)
     
     # Use the message service to handle the sending logic
-    return await send_message_to_user_service(email, message, ADAPTER, CONFIG.APP_ID, card_name)
+    return await send_message_to_user_service(
+        email,
+        message,
+        ADAPTER,
+        CONFIG.APP_ID,
+        card_name,
+        conversation_reference,
+        card_data
+    )
 
 
 # Add a root route

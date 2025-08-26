@@ -1,0 +1,120 @@
+{
+    "type": "AdaptiveCard",
+    "version": "1.5",
+    "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+    "speak": "{{cardTitle}}",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "New Progress items assigned to you",
+            "size": "ExtraLarge",
+            "weight": "Bolder",
+            "color": "Default",
+            "spacing": "None"
+        },
+        {
+            "type": "TextBlock",
+            "text": " ",
+            "separator": true,
+            "spacing": "Large"
+        },
+        {
+            "type": "TextBlock",
+            "text": "{{departmentName}}",
+            "size": "Large",
+            "weight": "Bolder",
+            "color": "Default",
+            "spacing": "Small"
+        },
+        {
+            "type": "TextBlock",
+            "text": "{{meetingDateTime}}",
+            "size": "Medium",
+            "color": "Default",
+            "spacing": "Small",
+            "weight": "Bolder"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": "auto",
+                    "verticalContentAlignment": "Center",
+                    "style": "default",
+                    "roundedCorners": true,
+                    "items": [
+                        {
+                            "type": "Badge",
+                            "text": "{{badgeText}}",
+                            "size": "Large",
+                            "style": "Subtle",
+                            "appearance": "Tint",
+                            "shape": "Rounded"
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": "auto",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "{{progressIndicator}}",
+                            "size": "Small",
+                            "weight": "Default",
+                            "spacing": "Small"
+                        }
+                    ],
+                    "verticalContentAlignment": "Center"
+                }
+            ],
+            "spacing": "Small"
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "ActionSet",
+                    "actions": [
+                        {
+                            "type": "Action.Submit",
+                            "title": "Open \"My Items\" in app"
+                        }
+                    ],
+                    "spacing": "None"
+                }
+            ],
+            "horizontalAlignment": "Center",
+            "bleed": true,
+            "separator": true,
+            "showBorder": true,
+            "spacing": "Small",
+            "roundedCorners": true
+        }
+    ],
+    "selectAction": {
+        "type": "Action.ToggleVisibility",
+        "targetElements": [
+            {
+                "elementId": "details1",
+                "isVisible": false
+            },
+            {
+                "elementId": "details2",
+                "isVisible": false
+            },
+            {
+                "elementId": "details3",
+                "isVisible": false
+            },
+            {
+                "elementId": "details4",
+                "isVisible": false
+            }
+        ]
+    },
+    "rtl": false,
+    "minHeight": "1px",
+    "fallbackText": "Date"
+}

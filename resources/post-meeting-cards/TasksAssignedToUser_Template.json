@@ -2,7 +2,7 @@
     "type": "AdaptiveCard",
     "version": "1.5",
     "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
-    "speak": "{{cardTitle}}",
+    "speak": "New Progress items assigned to you",
     "body": [
         {
             "type": "TextBlock",

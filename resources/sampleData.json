@@ -19,7 +19,7 @@
     },
     {
       "title": "Sales Kunden-Durchlaufzeit bis Abschluss <4 Monate",
-      "type": "Decision",
+      "type": "Agreement",
       "dueDate": "01.02.",
       "detailsTitle": "Details2",
       "meetingOrigin": "Feb26 – 1 / 6 – Sales Department Progress",
@@ -28,20 +28,10 @@
       "relation": "Gezielte Marketing-Maßnahme..."
     },
     {
-      "title": "Gezielte Marketingmaßnahmen",
+      "title": "Ritik Kunden-Durchlaufzeit bis Abschluss <4 Monate",
       "type": "Agreement",
       "dueDate": "01.02.",
       "detailsTitle": "Details3",
-      "meetingOrigin": "Feb26 – 1 / 6 – Sales Department Progress",
-      "meetingDate": "27.01.2026",
-      "agendaItem": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
-      "relation": "Gezielte Marketing-Maßnahme..."
-    },
-    {
-      "title": "Sales Kunden-Durchlaufzeit bis Abschluss <4 Monate",
-      "type": "Decision",
-      "dueDate": "01.02.",
-      "detailsTitle": "Details4",
       "meetingOrigin": "Feb26 – 1 / 6 – Sales Department Progress",
       "meetingDate": "27.01.2026",
       "agendaItem": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
