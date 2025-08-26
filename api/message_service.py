@@ -116,6 +116,67 @@ def load_updated_tasks_card(default_name: str = "TasksAssignedToUserUpdated.json
     """Convenience loader for the updated TasksAssigned card template."""
     return load_card_by_name(default_name)
 
+def load_sample_data() -> Optional[dict]:
+    """Load sample data for populating card templates"""
+    data_path = os.path.join(os.getcwd(), "resources", "sampleData.json")
+    try:
+        print(f"[DEBUG] Loading sample data from: {data_path}")
+        with open(data_path, "r", encoding="utf-8") as f:
+            sample_data = json.loads(f.read())
+            print(f"[DEBUG] ✅ Sample data loaded successfully")
+            return sample_data
+    except Exception as e:
+        print(f"[ERROR] Failed to load sample data: {e}")
+        return None
+
+def populate_card_template(template: dict, data: dict) -> dict:
+    """Populate a card template with data by replacing {{placeholder}} syntax"""
+    import re
+    
+    def replace_placeholders(obj):
+        if isinstance(obj, dict):
+            return {key: replace_placeholders(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [replace_placeholders(item) for item in obj]
+        elif isinstance(obj, str):
+            # Replace {{placeholder}} with actual data
+            def replacer(match):
+                placeholder = match.group(1)
+                try:
+                    # Handle nested properties like tasks[0].title
+                    if '[' in placeholder and ']' in placeholder:
+                        # Parse array access like tasks[0].title
+                        parts = placeholder.split('.')
+                        result = data
+                        for part in parts:
+                            if '[' in part and ']' in part:
+                                # Handle array access
+                                array_name = part.split('[')[0]
+                                index = int(part.split('[')[1].split(']')[0])
+                                result = result[array_name][index]
+                            else:
+                                result = result[part]
+                        return str(result)
+                    else:
+                        # Simple property access
+                        parts = placeholder.split('.')
+                        result = data
+                        for part in parts:
+                            result = result[part]
+                        return str(result)
+                except (KeyError, IndexError, TypeError):
+                    print(f"[WARN] Placeholder not found in data: {placeholder}")
+                    return match.group(0)  # Return original if not found
+            
+            return re.sub(r'\{\{([^}]+)\}\}', replacer, obj)
+        else:
+            return obj
+    
+    print(f"[DEBUG] Populating template with data...")
+    populated_card = replace_placeholders(template)
+    print(f"[DEBUG] ✅ Template populated successfully")
+    return populated_card
+
 async def send_message_to_user_service(email, message, adapter, app_id, card_name=None, conversation_reference: Optional[dict] = None):
     """Main service function to send messages to users using hybrid approach"""
     try:
@@ -127,14 +188,24 @@ async def send_message_to_user_service(email, message, adapter, app_id, card_nam
         
         # Load the adaptive card template by name
         if card_name:
-            adaptive_card = load_card_by_name(card_name)
-            if not adaptive_card:
+            card_template = load_card_by_name(card_name)
+            if not card_template:
                 return json_response({"error": f"Card template '{card_name}' not found."}, status=404)
         else:
-            adaptive_card = load_card_by_name("TasksAssignedToUser.json")
-            if not adaptive_card:
+            card_template = load_card_by_name("TasksAssignedToUser.json")
+            if not card_template:
                 return json_response({"error": "Default card template 'TasksAssignedToUser.json' not found."}, status=404)
         print(f"[DEBUG] ✅ Loaded adaptive card template: {card_name or 'TasksAssignedToUser.json'}")
+        
+        # Load sample data for populating the template
+        sample_data = load_sample_data()
+        if not sample_data:
+            return json_response({"error": "Sample data not found. Please ensure sampleData.json exists in resources/"}, status=404)
+        print(f"[DEBUG] ✅ Loaded sample data")
+        
+        # Populate the template with data
+        adaptive_card = populate_card_template(card_template, sample_data)
+        print(f"[DEBUG] ✅ Template populated with dynamic data")
         
         # Get fresh access token to find user
         print(f"[DEBUG] Getting fresh Graph API access token...")

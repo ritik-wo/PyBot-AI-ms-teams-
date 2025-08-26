@@ -1476,6 +1476,27 @@
             "bleed": true,
             "showBorder": true,
             "separator": true
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "ActionSet",
+                    "actions": [
+                        {
+                            "type": "Action.Submit",
+                            "title": "Open \"My Items\" in app"
+                        }
+                    ],
+                    "spacing": "None"
+                }
+            ],
+            "horizontalAlignment": "Center",
+            "bleed": true,
+            "separator": true,
+            "showBorder": true,
+            "spacing": "Small",
+            "roundedCorners": true
         }
     ],
     "selectAction": {

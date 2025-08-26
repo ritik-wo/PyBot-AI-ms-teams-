@@ -2,11 +2,11 @@
     "type": "AdaptiveCard",
     "version": "1.5",
     "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
-    "speak": "{{cardTitle}}",
+    "speak": "New Progress items assigned to you",
     "body": [
         {
             "type": "TextBlock",
-            "text": "{{cardTitle}}",
+            "text": "New Progress items assigned to you",
             "size": "ExtraLarge",
             "weight": "Bolder",
             "color": "Default",
@@ -20,7 +20,7 @@
         },
         {
             "type": "TextBlock",
-            "text": "{{departmentName}}",
+            "text": "Sales Department Progress",
             "size": "Large",
             "weight": "Bolder",
             "color": "Default",
@@ -28,7 +28,7 @@
         },
         {
             "type": "TextBlock",
-            "text": "{{meetingDateTime}}",
+            "text": "Tue 27. January 2026 10:00 – 12:00",
             "size": "Medium",
             "color": "Default",
             "spacing": "Small",
@@ -46,7 +46,7 @@
                     "items": [
                         {
                             "type": "Badge",
-                            "text": "{{badgeText}}",
+                            "text": "Feb26",
                             "size": "Large",
                             "style": "Subtle",
                             "appearance": "Tint",
@@ -60,7 +60,7 @@
                     "items": [
                         {
                             "type": "TextBlock",
-                            "text": "{{progressIndicator}}",
+                            "text": "2 / 6",
                             "size": "Small",
                             "weight": "Default",
                             "spacing": "Small"
@@ -173,7 +173,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].title}}",
+                                                            "text": "Gezielte Marketingmaßnahmen",
                                                             "maxLines": 1,
                                                             "spacing": "Small",
                                                             "isSubtle": false,
@@ -212,7 +212,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].type}}",
+                                                            "text": "Agreement",
                                                             "wrap": true,
                                                             "size": "Small"
                                                         }
@@ -237,7 +237,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].dueDate}}",
+                                                            "text": "01.02.",
                                                             "size": "Small"
                                                         }
                                                     ]
@@ -270,7 +270,7 @@
                     "items": [
                         {
                             "type": "TextBlock",
-                            "text": "{{tasks[0].detailsTitle}}",
+                            "text": "Details1",
                             "size": "Medium",
                             "weight": "Bolder",
                             "spacing": "None"
@@ -317,7 +317,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].meetingOrigin}}",
+                                                            "text": "Feb26 – 1 / 6 – Sales Department Progress",
                                                             "size": "Small",
                                                             "wrap": true
                                                         }
@@ -352,7 +352,7 @@
                                     "items": [
                                         {
                                             "type": "TextBlock",
-                                            "text": "{{tasks[0].meetingDate}}",
+                                            "text": "27.01.2026",
                                             "size": "Small"
                                         }
                                     ]
@@ -390,7 +390,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].agendaItem}}",
+                                                            "text": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
                                                             "size": "Small",
                                                             "wrap": true
                                                         }
@@ -445,7 +445,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].relation}}",
+                                                            "text": "Gezielte Marketing-Maßnahme...",
                                                             "size": "Small",
                                                             "wrap": true,
                                                             "spacing": "None"
@@ -506,7 +506,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].title}}",
+                                                            "text": "Sales Kunden-Durchlaufzeit bis Abschluss <4 Monate",
                                                             "maxLines": 1,
                                                             "size": "Small"
                                                         }
@@ -542,7 +542,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].type}}",
+                                                            "text": "Decision",
                                                             "size": "Small"
                                                         }
                                                     ]
@@ -566,7 +566,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].dueDate}}",
+                                                            "text": "01.02.",
                                                             "size": "Small"
                                                         }
                                                     ]
@@ -598,7 +598,7 @@
                     "items": [
                         {
                             "type": "TextBlock",
-                            "text": "{{tasks[1].detailsTitle}}",
+                            "text": "Details2",
                             "size": "Medium",
                             "weight": "Bolder",
                             "spacing": "None"
@@ -645,7 +645,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].meetingOrigin}}",
+                                                            "text": "Feb26 – 1 / 6 – Sales Department Progress",
                                                             "size": "Small",
                                                             "wrap": true
                                                         }
@@ -680,7 +680,7 @@
                                     "items": [
                                         {
                                             "type": "TextBlock",
-                                            "text": "{{tasks[1].meetingDate}}",
+                                            "text": "27.01.2026",
                                             "size": "Small"
                                         }
                                     ]
@@ -718,7 +718,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].agendaItem}}",
+                                                            "text": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
                                                             "size": "Small",
                                                             "wrap": true
                                                         }
@@ -773,7 +773,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].relation}}",
+                                                            "text": "Gezielte Marketing-Maßnahme...",
                                                             "size": "Small",
                                                             "wrap": true,
                                                             "spacing": "None"
@@ -834,7 +834,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[2].title}}",
+                                                            "text": "Gezielte Marketingmaßnahmen",
                                                             "maxLines": 1,
                                                             "spacing": "Small",
                                                             "size": "Small"
@@ -872,7 +872,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[2].type}}",
+                                                            "text": "Agreement",
                                                             "wrap": true,
                                                             "size": "Small"
                                                         }
@@ -897,7 +897,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].dueDate}}",
+                                                            "text": "01.02.",
                                                             "size": "Small"
                                                         }
                                                     ]
@@ -929,7 +929,7 @@
                     "items": [
                         {
                             "type": "TextBlock",
-                            "text": "{{tasks[2].detailsTitle}}",
+                            "text": "Details3",
                             "size": "Medium",
                             "weight": "Bolder",
                             "spacing": "None"
@@ -976,7 +976,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].meetingOrigin}}",
+                                                            "text": "Feb26 – 1 / 6 – Sales Department Progress",
                                                             "size": "Small",
                                                             "wrap": true
                                                         }
@@ -1011,7 +1011,7 @@
                                     "items": [
                                         {
                                             "type": "TextBlock",
-                                            "text": "{{tasks[1].meetingDate}}",
+                                            "text": "27.01.2026",
                                             "size": "Small"
                                         }
                                     ]
@@ -1049,7 +1049,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].agendaItem}}",
+                                                            "text": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
                                                             "size": "Small",
                                                             "wrap": true
                                                         }
@@ -1104,7 +1104,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].relation}}",
+                                                            "text": "Gezielte Marketing-Maßnahme...",
                                                             "size": "Small",
                                                             "wrap": true,
                                                             "spacing": "None"
@@ -1165,7 +1165,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].title}}",
+                                                            "text": "Sales Kunden-Durchlaufzeit bis Abschluss <4 Monate",
                                                             "maxLines": 1,
                                                             "size": "Small"
                                                         }
@@ -1201,7 +1201,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].type}}",
+                                                            "text": "Decision",
                                                             "size": "Small"
                                                         }
                                                     ]
@@ -1225,7 +1225,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].dueDate}}",
+                                                            "text": "01.02.",
                                                             "size": "Small"
                                                         }
                                                     ]
@@ -1249,256 +1249,257 @@
                             ]
                         }
                     ]
-                },
-                {
-                    "type": "Container",
-                    "style": "emphasis",
-                    "id": "details4",
-                    "items": [
-                        {
-                            "type": "TextBlock",
-                            "text": "{{tasks[3].detailsTitle}}",
-                            "size": "Medium",
-                            "weight": "Bolder",
-                            "spacing": "None"
-                        },
-                        {
-                            "type": "ColumnSet",
-                            "spacing": "Small",
-                            "columns": [
-                                {
-                                    "type": "Column",
-                                    "width": 30,
-                                    "items": [
-                                        {
-                                            "type": "TextBlock",
-                                            "text": "Meeting origin",
-                                            "size": "Small",
-                                            "isSubtle": true,
-                                            "spacing": "None"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "type": "Column",
-                                    "width": 65,
-                                    "items": [
-                                        {
-                                            "type": "ColumnSet",
-                                            "spacing": "Small",
-                                            "columns": [
-                                                {
-                                                    "type": "Column",
-                                                    "width": "auto",
-                                                    "items": [
-                                                        {
-                                                            "type": "Icon",
-                                                            "name": "Calendar",
-                                                            "size": "xSmall"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "Column",
-                                                    "width": "stretch",
-                                                    "items": [
-                                                        {
-                                                            "type": "TextBlock",
-                                                            "text": "{{tasks[1].meetingOrigin}}",
-                                                            "size": "Small",
-                                                            "wrap": true
-                                                        }
-                                                    ],
-                                                    "spacing": "ExtraSmall"
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "type": "ColumnSet",
-                            "spacing": "Small",
-                            "columns": [
-                                {
-                                    "type": "Column",
-                                    "width": 30,
-                                    "items": [
-                                        {
-                                            "type": "TextBlock",
-                                            "text": "Meeting date",
-                                            "size": "Small",
-                                            "isSubtle": true
-                                        }
-                                    ]
-                                },
-                                {
-                                    "type": "Column",
-                                    "width": 65,
-                                    "items": [
-                                        {
-                                            "type": "TextBlock",
-                                            "text": "{{tasks[1].meetingDate}}",
-                                            "size": "Small"
-                                        }
-                                    ]
-                                }
-                            ],
-                            "separator": true
-                        },
-                        {
-                            "type": "ColumnSet",
-                            "spacing": "Small",
-                            "columns": [
-                                {
-                                    "type": "Column",
-                                    "width": 30,
-                                    "items": [
-                                        {
-                                            "type": "TextBlock",
-                                            "text": "Agenda item",
-                                            "size": "Small",
-                                            "isSubtle": true
-                                        }
-                                    ],
-                                    "verticalContentAlignment": "Top"
-                                },
-                                {
-                                    "type": "Column",
-                                    "width": 65,
-                                    "items": [
-                                        {
-                                            "type": "ColumnSet",
-                                            "columns": [
-                                                {
-                                                    "type": "Column",
-                                                    "width": "stretch",
-                                                    "items": [
-                                                        {
-                                                            "type": "TextBlock",
-                                                            "text": "{{tasks[0].agendaItem}}",
-                                                            "size": "Small",
-                                                            "wrap": true
-                                                        }
-                                                    ],
-                                                    "verticalContentAlignment": "Top"
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ],
-                            "separator": true
-                        },
-                        {
-                            "type": "ColumnSet",
-                            "spacing": "Small",
-                            "columns": [
-                                {
-                                    "type": "Column",
-                                    "width": 30,
-                                    "items": [
-                                        {
-                                            "type": "TextBlock",
-                                            "text": "Relation",
-                                            "size": "Small",
-                                            "isSubtle": true
-                                        }
-                                    ]
-                                },
-                                {
-                                    "type": "Column",
-                                    "width": 65,
-                                    "items": [
-                                        {
-                                            "type": "ColumnSet",
-                                            "spacing": "Small",
-                                            "columns": [
-                                                {
-                                                    "type": "Column",
-                                                    "width": "auto",
-                                                    "items": [
-                                                        {
-                                                            "type": "Icon",
-                                                            "name": "Target",
-                                                            "size": "xSmall"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "type": "Column",
-                                                    "width": "stretch",
-                                                    "items": [
-                                                        {
-                                                            "type": "TextBlock",
-                                                            "text": "{{tasks[0].relation}}",
-                                                            "size": "Small",
-                                                            "wrap": true,
-                                                            "spacing": "None"
-                                                        }
-                                                    ],
-                                                    "spacing": "ExtraSmall"
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ],
-                            "separator": true
-                        }
-                    ],
-                    "separator": true,
-                    "isVisible": false
-                },
-                {
-                    "type": "Container",
-                    "items": [
-                        {
-                            "type": "ActionSet",
-                            "actions": [
-                                {
-                                    "type": "Action.Submit",
-                                    "title": "Open \"My Items\" in app"
-                                }
-                            ],
-                            "spacing": "None"
-                        }
-                    ],
-                    "horizontalAlignment": "Center",
-                    "bleed": true,
-                    "separator": true,
-                    "showBorder": true,
-                    "spacing": "Small",
-                    "roundedCorners": true
                 }
             ],
             "bleed": true,
             "showBorder": true,
             "separator": true
+        },
+        {
+            "type": "Container",
+            "style": "emphasis",
+            "id": "details4",
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "Details4",
+                    "size": "Medium",
+                    "weight": "Bolder",
+                    "spacing": "None"
+                },
+                {
+                    "type": "ColumnSet",
+                    "spacing": "Small",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": 30,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Meeting origin",
+                                    "size": "Small",
+                                    "isSubtle": true,
+                                    "spacing": "None"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": 65,
+                            "items": [
+                                {
+                                    "type": "ColumnSet",
+                                    "spacing": "Small",
+                                    "columns": [
+                                        {
+                                            "type": "Column",
+                                            "width": "auto",
+                                            "items": [
+                                                {
+                                                    "type": "Icon",
+                                                    "name": "Calendar",
+                                                    "size": "xSmall"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "Column",
+                                            "width": "stretch",
+                                            "items": [
+                                                {
+                                                    "type": "TextBlock",
+                                                    "text": "Feb26 – 1 / 6 – Sales Department Progress",
+                                                    "size": "Small",
+                                                    "wrap": true
+                                                }
+                                            ],
+                                            "spacing": "ExtraSmall"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "ColumnSet",
+                    "spacing": "Small",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": 30,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Meeting date",
+                                    "size": "Small",
+                                    "isSubtle": true
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": 65,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "27.01.2026",
+                                    "size": "Small"
+                                }
+                            ]
+                        }
+                    ],
+                    "separator": true
+                },
+                {
+                    "type": "ColumnSet",
+                    "spacing": "Small",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": 30,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Agenda item",
+                                    "size": "Small",
+                                    "isSubtle": true
+                                }
+                            ],
+                            "verticalContentAlignment": "Top"
+                        },
+                        {
+                            "type": "Column",
+                            "width": 65,
+                            "items": [
+                                {
+                                    "type": "ColumnSet",
+                                    "columns": [
+                                        {
+                                            "type": "Column",
+                                            "width": "stretch",
+                                            "items": [
+                                                {
+                                                    "type": "TextBlock",
+                                                    "text": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
+                                                    "size": "Small",
+                                                    "wrap": true
+                                                }
+                                            ],
+                                            "verticalContentAlignment": "Top"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "separator": true
+                },
+                {
+                    "type": "ColumnSet",
+                    "spacing": "Small",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": 30,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Relation",
+                                    "size": "Small",
+                                    "isSubtle": true
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": 65,
+                            "items": [
+                                {
+                                    "type": "ColumnSet",
+                                    "spacing": "Small",
+                                    "columns": [
+                                        {
+                                            "type": "Column",
+                                            "width": "auto",
+                                            "items": [
+                                                {
+                                                    "type": "Icon",
+                                                    "name": "Target",
+                                                    "size": "xSmall"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "Column",
+                                            "width": "stretch",
+                                            "items": [
+                                                {
+                                                    "type": "TextBlock",
+                                                    "text": "Gezielte Marketing-Maßnahme...",
+                                                    "size": "Small",
+                                                    "wrap": true,
+                                                    "spacing": "None"
+                                                }
+                                            ],
+                                            "spacing": "ExtraSmall"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "separator": true
+                }
+            ],
+            "separator": true,
+            "isVisible": false
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "ActionSet",
+                    "actions": [
+                        {
+                            "type": "Action.Submit",
+                            "title": "Open \"My Items\" in app"
+                        }
+                    ],
+                    "spacing": "None"
+                }
+            ],
+            "horizontalAlignment": "Center",
+            "bleed": true,
+            "separator": true,
+            "showBorder": true,
+            "spacing": "Small",
+            "roundedCorners": true
         }
     ],
-    "selectAction": {
-        "type": "Action.ToggleVisibility",
-        "targetElements": [
-            {
-                "elementId": "details1",
-                "isVisible": false
-            },
-            {
-                "elementId": "details2",
-                "isVisible": false
-            },
-            {
-                "elementId": "details3",
-                "isVisible": false
-            },
-            {
-                "elementId": "details4",
-                "isVisible": false
-            }
-        ]
-    },
+                        "selectAction": {
+                        "type": "Action.ToggleVisibility",
+                        "targetElements": [
+                            {
+                                "elementId": "details1",
+                                "isVisible": false
+                            },
+                            {
+                                "elementId": "details2",
+                                "isVisible": false
+                            },
+                            {
+                                "elementId": "details3",
+                                "isVisible": false
+                            },
+                            {
+                                "elementId": "details4",
+                                "isVisible": false
+                            }
+                        ]
+                    },
+    
     "rtl": false,
     "minHeight": "1px",
     "fallbackText": "Date"
