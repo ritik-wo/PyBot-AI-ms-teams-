@@ -131,16 +131,23 @@ def load_updated_tasks_card(default_name: str = "TasksAssignedToUserUpdated.json
 
 def load_sample_data() -> Optional[dict]:
     """Load sample data for populating card templates"""
-    data_path = os.path.join(os.getcwd(), "resources", "sampleData.json")
-    try:
-        print(f"[DEBUG] Loading sample data from: {data_path}")
-        with open(data_path, "r", encoding="utf-8") as f:
-            sample_data = json.loads(f.read())
-            print(f"[DEBUG] ✅ Sample data loaded successfully")
-            return sample_data
-    except Exception as e:
-        print(f"[ERROR] Failed to load sample data: {e}")
-        return None
+    primary = os.path.join(os.getcwd(), "resources", "sampleData.json")
+    fallback = os.path.join(os.getcwd(), "resources", "sampleData-taskAssigned.json")
+    for path in (primary, fallback):
+        try:
+            print(f"[DEBUG] Loading sample data from: {path}")
+            if not os.path.exists(path):
+                print(f"[DEBUG] Sample data not found at: {path}")
+                continue
+            with open(path, "r", encoding="utf-8") as f:
+                sample_data = json.loads(f.read())
+                print(f"[DEBUG] ✅ Sample data loaded successfully from: {path}")
+                return sample_data
+        except Exception as e:
+            print(f"[WARN] Could not load sample data from {path}: {e}")
+            continue
+    print("[ERROR] No sample data file found (looked for resources/sampleData.json and resources/sampleData-taskAssigned.json)")
+    return None
 
 def build_dynamic_card_with_tasks(data: dict) -> dict:
     """Thin wrapper delegating to api.cards.tasks_assigned.build_dynamic_card_with_tasks"""
@@ -450,33 +457,47 @@ def _set_due_date_in_row(row: dict, value: str) -> bool:
             if not isinstance(node, dict):
                 continue
             if node.get('type') == 'ColumnSet':
-                # detect toggle presence
-                has_toggle = False
-                for col in node.get('columns', []) or []:
+                # detect which column contains a toggle (directly or in nested ColumnSet)
+                columns = node.get('columns', []) or []
+                toggle_col_index = None
+                def _col_has_toggle(col: dict) -> bool:
                     for it in col.get('items', []) or []:
-                        if isinstance(it, dict) and it.get('type') == 'Input.Toggle':
-                            has_toggle = True
-                            break
-                        # nested structures
-                        if isinstance(it, dict) and it.get('type') == 'ColumnSet':
-                            for subcol in it.get('columns', []) or []:
-                                for sit in subcol.get('items', []) or []:
-                                    if isinstance(sit, dict) and sit.get('type') == 'Input.Toggle':
-                                        has_toggle = True
-                                        break
-                                if has_toggle:
-                                    break
-                        if has_toggle:
-                            break
-                    if has_toggle:
-                        break
-                if has_toggle:
-                    # set the first TextBlock in this ColumnSet
-                    for col in node.get('columns', []) or []:
-                        for it in col.get('items', []) or []:
-                            if isinstance(it, dict) and it.get('type') == 'TextBlock':
-                                it['text'] = str(value)
+                        if isinstance(it, dict):
+                            if it.get('type') == 'Input.Toggle':
                                 return True
+                            if it.get('type') == 'ColumnSet':
+                                # look into nested ColumnSet columns as well
+                                for subcol in it.get('columns', []) or []:
+                                    if _col_has_toggle(subcol):
+                                        return True
+                    return False
+                for idx, col in enumerate(columns):
+                    if isinstance(col, dict) and _col_has_toggle(col):
+                        toggle_col_index = idx
+                        break
+
+                if toggle_col_index is not None:
+                    # Heuristic: due date TextBlock sits in the column immediately left of the toggle column
+                    target_index = toggle_col_index - 1 if toggle_col_index > 0 else toggle_col_index
+                    if 0 <= target_index < len(columns):
+                        target_col = columns[target_index]
+                        # set the first TextBlock in target column (search depth-first)
+                        stack2 = [target_col]
+                        while stack2:
+                            node2 = stack2.pop()
+                            if isinstance(node2, dict):
+                                if node2.get('type') == 'TextBlock':
+                                    node2['text'] = str(value)
+                                    return True
+                                for k in ('items', 'columns'):
+                                    if k in node2 and isinstance(node2[k], list):
+                                        stack2.extend(reversed(node2[k]))
+                        # fallback: set any TextBlock within the ColumnSet that is likely the due date
+                        for col in columns:
+                            for it in col.get('items', []) or []:
+                                if isinstance(it, dict) and it.get('type') == 'TextBlock' and it.get('size') == 'Small':
+                                    it['text'] = str(value)
+                                    return True
             # continue walking
             for k in ('items', 'columns'):
                 if k in node and isinstance(node[k], list):
