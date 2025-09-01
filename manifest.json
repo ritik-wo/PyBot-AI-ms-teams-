@@ -1,0 +1,85 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.20/MicrosoftTeams.schema.json",
+  "version": "1.0.2",
+  "manifestVersion": "1.20",
+  "id": "4814d54d-b183-4626-8774-9089d0358c0b",
+  "name": {
+    "short": "ProgressMaker Teams App (DEV)",
+    "full": "ProgressMaker Teams App (DEV)"
+  },
+  "developer": {
+    "name": "ProgressMaker",
+    "mpnId": "",
+    "websiteUrl": "https://www.progressmaker.io/",
+    "privacyUrl": "https://www.progressmaker.io/data-privacy/",
+    "termsOfUseUrl": "https://www.progressmaker.io/terms-conditions/"
+  },
+  "description": {
+    "short": "Meeting assistance app",
+    "full": "Meeting assistance app for managing meeting agenda"
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#FFFFFF",
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://epm-ms-team-app.vercel.app/#/teams-config",
+      "canUpdateConfiguration": true,
+      "scopes": [
+        "groupChat",
+        "team"
+      ],
+      "context": [
+        "meetingStage",
+        "meetingSidePanel",
+        "meetingDetailsTab",
+        "meetingChatTab",
+        "privateChatTab",
+        "channelTab"
+      ],
+      "meetingSurfaces": [
+        "stage",
+        "sidePanel"
+      ]
+    }
+  ],
+  "staticTabs": [
+    {
+      "name": "ProgressMaker Teams App (DEV)",
+      "entityId": "92f5311b-c3b5-4b06-abea-ae359e62adc0",
+      "contentUrl": "https://epm-ms-team-app.vercel.app",
+      "websiteUrl": "https://epm-ms-team-app.vercel.app",
+      "scopes": [
+        "groupChat",
+        "team",
+        "personal"
+      ],
+      "context": [
+        "personalTab",
+        "meetingChatTab",
+        "meetingStage",
+        "meetingSidePanel",
+        "meetingDetailsTab",
+        "meetingChatTab"
+      ]
+    }
+  ],
+  "validDomains": [
+    "epm-ms-team-app.vercel.app",
+    "app.test.progressmaker.io",
+    "gateway.test.progressmaker.io",
+    "login.microsoftonline.com",
+    "graph.microsoft.com"
+  ],
+  "webApplicationInfo": {
+    "id": "17d8f648-daad-44b5-a8e0-3e52b54e13b8",
+    "resource": "api://epm-ms-team-app.vercel.app/17d8f648-daad-44b5-a8e0-3e52b54e13b8"
+  },
+  "authorization": {
+    "permissions": {
+      "resourceSpecific": []
+    }
+  }
+}
