@@ -690,7 +690,18 @@ async def send_message_to_user_service(email, message, adapter, app_id, card_nam
         # Build dynamic card with task injection
         adaptive_card = build_dynamic_card_with_tasks(data_source)
         if not adaptive_card:
-            return json_response({"error": "Failed to build dynamic card with tasks"}, status=500)
+            # Provide detailed error to aid debugging without fallbacks
+            return json_response({
+                "error": "Failed to build dynamic card with tasks",
+                "reason": "extract_task_section_template returned None or builder aborted",
+                "hint": "Check server logs for [ERROR] and [DIAG] lines from api/cards/tasks_assigned.extract_task_section_template(). They report ColumnSet/Container counts and placeholder presence.",
+                "expected_template": "resources/post-meeting-cards/TasksAssignedToUser.json",
+                "notes": [
+                    "Header is detected as a ColumnSet immediately followed by a Container with selectAction and task placeholders",
+                    "Details container id should start with 'details'",
+                    "Verify your template retains placeholders like tasks[0] or {{tasks[",
+                ]
+            }, status=500)
         print(f"[DEBUG] ✅ Dynamic card built with task injection")
         
         # Get fresh access token to find user

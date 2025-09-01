@@ -29,7 +29,7 @@ def build_dynamic_card_with_tasks(data: dict) -> Optional[dict]:
     # Extract task section template
     task_section_template = extract_task_section_template(full_template)
     if not task_section_template:
-        print("[ERROR] Failed to extract task section template")
+        print("[ERROR] Failed to extract task section template (no fallback by design)")
         return None
 
     # Build dynamic card
@@ -98,7 +98,47 @@ def extract_task_section_template(full_template: dict) -> Optional[dict]:
             "task_row_template": table_structure[1],
             "task_details_template": table_structure[2] if len(table_structure) > 2 else None,
         }
+    # Detailed diagnostics
+    try:
+        template_str = json.dumps(full_template) if isinstance(full_template, (dict, list)) else str(full_template)
+    except Exception:
+        template_str = str(full_template)
+
+    # Counts and quick checks
+    def count_occurrences(s: str, needle: str) -> int:
+        try:
+            return s.count(needle)
+        except Exception:
+            return 0
+
+    has_tasks_indexed = ("tasks[0]" in template_str) or ("{{tasks[" in template_str)
+    count_tasks0 = count_occurrences(template_str, "tasks[0]")
+    count_tasks_brace = count_occurrences(template_str, "{{tasks[")
+
+    # Walk a shallow structure to count ColumnSets and Containers with selectAction
+    def shallow_scan(items):
+        colsets = 0
+        containers = 0
+        containers_with_select = 0
+        if not isinstance(items, list):
+            return colsets, containers, containers_with_select
+        for it in items:
+            if isinstance(it, dict):
+                t = it.get("type")
+                if t == "ColumnSet":
+                    colsets += 1
+                if t == "Container":
+                    containers += 1
+                    if "selectAction" in it:
+                        containers_with_select += 1
+        return colsets, containers, containers_with_select
+
+    shallow_colsets, shallow_containers, shallow_containers_with_select = shallow_scan(body)
+
     print("[ERROR] Could not find complete table structure in template (no header+row+details match)")
+    print(f"[DIAG] body_items={len(body)} shallow_colsets={shallow_colsets} shallow_containers={shallow_containers} containers_with_select={shallow_containers_with_select}")
+    print(f"[DIAG] placeholders_present={has_tasks_indexed} tasks[0]_count={count_tasks0} double_brace_tasks_prefix_count={count_tasks_brace}")
+    print("[DIAG] Hint: header is detected as a ColumnSet immediately followed by a Container with selectAction and task placeholders; details id should start with 'details'.")
     return None
 
 

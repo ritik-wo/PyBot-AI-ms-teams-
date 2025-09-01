@@ -1,0 +1,778 @@
+{
+    "type": "AdaptiveCard",
+    "version": "1.5",
+    "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+    "speak": "Upcoming deadline for your progress item",
+    "body": [
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "Upcoming deadline for your progress item",
+                            "size": "Large",
+                            "weight": "Bolder",
+                            "color": "Default",
+                            "spacing": "None",
+                            "style": "heading"
+                        }
+                    ],
+                    "verticalContentAlignment": "Center"
+                },
+                {
+                    "type": "Column",
+                    "width": "auto",
+                    "verticalContentAlignment": "Center",
+                    "items": [
+                        {
+                            "type": "Badge",
+                            "text": "{dueDate}",
+                            "style": "Attention",
+                            "appearance": "Tint",
+                            "spacing": "None"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Container",
+            "width": "stretch",
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "{{meeting.type}}",
+                    "size": "Default",
+                    "weight": "Bolder",
+                    "color": "Default",
+                    "spacing": "None",
+                    "style": "heading"
+                }
+            ],
+            "verticalContentAlignment": "Center"
+        },
+        {
+            "type": "Container",
+            "spacing": "ExtraSmall",
+            "items": [
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": 3,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Progress item",
+                                    "weight": "Lighter",
+                                    "color": "Default",
+                                    "size": "Small"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": 2,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Type",
+                                    "weight": "Lighter",
+                                    "color": "Default",
+                                    "size": "Small"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": 2,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Due date",
+                                    "weight": "Lighter",
+                                    "color": "Default",
+                                    "size": "Small"
+                                }
+                            ]
+                        }
+                    ],
+                    "spacing": "None",
+                    "separator": true
+                },
+                {
+                    "type": "Container",
+                    "separator": true,
+                    "spacing": "Small",
+                    "selectAction": {
+                        "type": "Action.ToggleVisibility",
+                        "targetElements": [
+                            {
+                                "elementId": "details1",
+                                "isVisible": true
+                            },
+                            {
+                                "elementId": "details2",
+                                "isVisible": false
+                            }
+                        ]
+                    },
+                    "items": [
+                        {
+                            "type": "ColumnSet",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 3,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "{{tasks[0].title}}",
+                                            "maxLines": 1,
+                                            "spacing": "Small",
+                                            "isSubtle": false,
+                                            "size": "Small"
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "CheckmarkStarburst",
+                                                            "size": "xxSmall",
+                                                            "spacing": "Small"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "{{tasks[0].type}}",
+                                                            "wrap": true,
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "None",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "{{tasks[0].dueDate}}",
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Input.Toggle",
+                                                            "spacing": "None"
+                                                        }
+                                                    ],
+                                                    "spacing": "None"
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "info",
+                                                            "size": "xxSmall"
+                                                        }
+                                                    ],
+                                                    "spacing": "None"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Container",
+                    "style": "emphasis",
+                    "id": "details1",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "{{tasks[0].detailsTitle}}",
+                            "size": "Medium",
+                            "weight": "Bolder",
+                            "spacing": "None"
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Meeting origin",
+                                            "size": "Small",
+                                            "isSubtle": true,
+                                            "spacing": "None"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "Small",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Calendar",
+                                                            "size": "xSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "{{tasks[0].meetingOrigin}}",
+                                                            "size": "Small",
+                                                            "wrap": true
+                                                        }
+                                                    ],
+                                                    "spacing": "ExtraSmall"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Meeting date",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "{{tasks[0].meetingDate}}",
+                                            "size": "Small"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Agenda item",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Top"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "{{tasks[0].agendaItem}}",
+                                            "size": "Small",
+                                            "wrap": true
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Relation",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "Small",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Target",
+                                                            "size": "xSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "{{tasks[0].relation}}",
+                                                            "size": "Small",
+                                                            "wrap": true,
+                                                            "spacing": "None"
+                                                        }
+                                                    ],
+                                                    "spacing": "ExtraSmall"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        }
+                    ],
+                    "separator": true,
+                    "isVisible": false
+                },
+                {
+                    "type": "Container",
+                    "separator": true,
+                    "spacing": "Small",
+                    "selectAction": {
+                        "type": "Action.ToggleVisibility",
+                        "targetElements": [
+                            {
+                                "elementId": "details1",
+                                "isVisible": false
+                            },
+                            {
+                                "elementId": "details2",
+                                "isVisible": true
+                            }
+                        ]
+                    },
+                    "items": [
+                        {
+                            "type": "ColumnSet",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 3,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "{{tasks[1].title}}",
+                                            "maxLines": 1,
+                                            "spacing": "Small",
+                                            "isSubtle": false,
+                                            "size": "Small"
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "CheckmarkStarburst",
+                                                            "size": "xxSmall",
+                                                            "spacing": "Small"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "{{tasks[1].type}}",
+                                                            "wrap": true,
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "None",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "{{tasks[1].dueDate}}",
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Input.Toggle",
+                                                            "spacing": "None"
+                                                        }
+                                                    ],
+                                                    "spacing": "None"
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "info",
+                                                            "size": "xxSmall"
+                                                        }
+                                                    ],
+                                                    "spacing": "None"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Container",
+                    "style": "emphasis",
+                    "id": "details2",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "{{tasks[1].detailsTitle}}",
+                            "size": "Medium",
+                            "weight": "Bolder",
+                            "spacing": "None"
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Meeting origin",
+                                            "size": "Small",
+                                            "isSubtle": true,
+                                            "spacing": "None"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "Small",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Calendar",
+                                                            "size": "xSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "{{tasks[1].meetingOrigin}}",
+                                                            "size": "Small",
+                                                            "wrap": true
+                                                        }
+                                                    ],
+                                                    "spacing": "ExtraSmall"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Meeting date",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "{{tasks[1].meetingDate}}",
+                                            "size": "Small"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Agenda item",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Top"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "{{tasks[1].agendaItem}}",
+                                            "size": "Small",
+                                            "wrap": true
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        },
+                        {
+                            "type": "ColumnSet",
+                            "spacing": "Small",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 30,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Relation",
+                                            "size": "Small",
+                                            "isSubtle": true
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 65,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "Small",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Target",
+                                                            "size": "xSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "{{tasks[1].relation}}",
+                                                            "size": "Small",
+                                                            "wrap": true,
+                                                            "spacing": "None"
+                                                        }
+                                                    ],
+                                                    "spacing": "ExtraSmall"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "separator": true
+                        }
+                    ],
+                    "separator": true,
+                    "isVisible": false
+                },
+                {
+                    "type": "Container",
+                    "items": [
+                        {
+                            "type": "ActionSet",
+                            "actions": [
+                                {
+                                    "type": "Action.Submit",
+                                    "title": "Save",
+                                    "tooltip": "Save ",
+                                    "style": "positive"
+                                },
+                                {
+                                    "type": "Action.Submit",
+                                    "title": "Open My Progressmaker"
+                                }
+                            ],
+                            "spacing": "None"
+                        }
+                    ],
+                    "horizontalAlignment": "Center",
+                    "bleed": true,
+                    "separator": true,
+                    "showBorder": true,
+                    "spacing": "Small",
+                    "roundedCorners": true
+                }
+            ],
+            "bleed": true,
+            "showBorder": true,
+            "separator": true
+        }
+    ],
+    "selectAction": {
+        "type": "Action.ToggleVisibility",
+        "targetElements": [
+            {
+                "elementId": "details1",
+                "isVisible": false
+            },
+            {
+                "elementId": "details2",
+                "isVisible": false
+            }
+        ]
+    }
+}

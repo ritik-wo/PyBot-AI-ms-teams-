@@ -1,0 +1,28 @@
+{
+  "dueDate": "2 days left",
+  "meeting": {
+    "type": "Strategie 2030"
+  },
+  "tasks": [
+    {
+      "title": "Sales Kunden-Durchlaufzeit bis Abschluss <4 Monate",
+      "type": "Agreement",
+      "dueDate": "01.02.",
+      "detailsTitle": "Gezielte Marketingmaßnahmen",
+      "meetingOrigin": "Feb26 – 1 / 6 – Sales Department Progress",
+      "meetingDate": "27.01.2026",
+      "agendaItem": "2. Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
+      "relation": "Gezielte Marketing-Maßnahmen"
+    },
+    {
+      "title": "Rezielte Marketingmaßnahmen",
+      "type": "Decision",
+      "dueDate": "01.02.",
+      "detailsTitle": "Sales Kunden-Durchlaufzeit bis Abschluss <4 Monate",
+      "meetingOrigin": "Feb26 – 1 / 6 – Sales Department Progress",
+      "meetingDate": "27.01.2026",
+      "agendaItem": "2. Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
+      "relation": "Gezielte Marketing-Maßnahmen"
+    }
+  ]
+}

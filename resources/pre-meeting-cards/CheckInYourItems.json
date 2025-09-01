@@ -1,0 +1,801 @@
+{
+    "type": "AdaptiveCard",
+    "version": "1.5",
+    "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+    "speak": "New Progress items assigned to you",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Check-in your progress items for",
+            "size": "ExtraLarge",
+            "weight": "Bolder",
+            "color": "Default",
+            "spacing": "None"
+        },
+        {
+            "type": "TextBlock",
+            "text": " ",
+            "separator": true,
+            "spacing": "Large"
+        },
+        {
+            "type": "TextBlock",
+            "text": "Sales Department Progress",
+            "size": "Large",
+            "weight": "Bolder",
+            "color": "Default",
+            "spacing": "Small"
+        },
+        {
+            "type": "TextBlock",
+            "text": "Tue 27. February 2026 10:00 – 12:00",
+            "size": "Medium",
+            "color": "Default",
+            "spacing": "Small",
+            "weight": "Bolder"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": "auto",
+                    "verticalContentAlignment": "Center",
+                    "style": "default",
+                    "roundedCorners": true,
+                    "items": [
+                        {
+                            "type": "Badge",
+                            "text": "Mar26",
+                            "size": "Large",
+                            "style": "Subtle",
+                            "appearance": "Tint",
+                            "shape": "Rounded"
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": "auto",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "3 / 6",
+                            "size": "Small",
+                            "weight": "Default",
+                            "spacing": "Small"
+                        }
+                    ],
+                    "verticalContentAlignment": "Center"
+                }
+            ],
+            "spacing": "Small"
+        },
+        {
+            "type": "Container",
+            "spacing": "Padding",
+            "items": [
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": 3,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Progress item",
+                                    "weight": "Lighter",
+                                    "color": "Accent",
+                                    "size": "Small"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": 2,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Type",
+                                    "weight": "Lighter",
+                                    "color": "Accent",
+                                    "size": "Small"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": 2,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Due date",
+                                    "weight": "Lighter",
+                                    "color": "Accent",
+                                    "size": "Small"
+                                }
+                            ]
+                        }
+                    ],
+                    "spacing": "ExtraSmall"
+                },
+                {
+                    "type": "Container",
+                    "separator": true,
+                    "spacing": "Small",
+                    "items": [
+                        {
+                            "type": "ColumnSet",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 3,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Gezielte Marketingmaßnahmen",
+                                            "maxLines": 1,
+                                            "spacing": "Small"
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "ThumbLike",
+                                                            "size": "xxSmall",
+                                                            "spacing": "Small"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Agreement",
+                                                            "wrap": true,
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "None",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "01.02.",
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "CheckmarkCircle",
+                                                            "size": "xxSmall"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Container",
+                    "separator": true,
+                    "spacing": "Small",
+                    "items": [
+                        {
+                            "type": "ColumnSet",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 3,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Sales Kunden-Durchlaufzeit bis Abschluss <4 Monate",
+                                            "maxLines": 1
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Maximize",
+                                                            "size": "xxSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Decision",
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "None",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "01.02.",
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "CheckmarkCircle",
+                                                            "size": "xxSmall"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Container",
+                    "separator": true,
+                    "spacing": "Small",
+                    "items": [
+                        {
+                            "type": "ColumnSet",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 3,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Gezielte Marketingmaßnahmen",
+                                            "maxLines": 1,
+                                            "spacing": "Small"
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "ThumbLike",
+                                                            "size": "xxSmall",
+                                                            "spacing": "Small"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Agreement",
+                                                            "wrap": true,
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "None",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "01.02.",
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "CheckmarkCircle",
+                                                            "size": "xxSmall"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "Container",
+                    "separator": true,
+                    "spacing": "Small",
+                    "items": [
+                        {
+                            "type": "ColumnSet",
+                            "columns": [
+                                {
+                                    "type": "Column",
+                                    "width": 3,
+                                    "items": [
+                                        {
+                                            "type": "TextBlock",
+                                            "text": "Sales Kunden-Durchlaufzeit bis Abschluss <4 Monate",
+                                            "maxLines": 1
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "Maximize",
+                                                            "size": "xxSmall"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "Decision",
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                },
+                                {
+                                    "type": "Column",
+                                    "width": 2,
+                                    "items": [
+                                        {
+                                            "type": "ColumnSet",
+                                            "spacing": "None",
+                                            "columns": [
+                                                {
+                                                    "type": "Column",
+                                                    "width": "stretch",
+                                                    "items": [
+                                                        {
+                                                            "type": "TextBlock",
+                                                            "text": "01.02.",
+                                                            "size": "Small"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "type": "Column",
+                                                    "width": "auto",
+                                                    "items": [
+                                                        {
+                                                            "type": "Icon",
+                                                            "name": "CheckmarkCircle",
+                                                            "size": "xxSmall"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "verticalContentAlignment": "Center"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "bleed": true,
+            "showBorder": true,
+            "separator": true
+        },
+        {
+            "type": "Container",
+            "style": "emphasis",
+            "spacing": "None",
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "Details",
+                    "size": "Medium",
+                    "weight": "Bolder",
+                    "spacing": "None"
+                },
+                {
+                    "type": "ColumnSet",
+                    "spacing": "Small",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": 30,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Meeting origin",
+                                    "size": "Small",
+                                    "isSubtle": true,
+                                    "spacing": "None"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": 65,
+                            "items": [
+                                {
+                                    "type": "ColumnSet",
+                                    "spacing": "Small",
+                                    "columns": [
+                                        {
+                                            "type": "Column",
+                                            "width": "auto",
+                                            "items": [
+                                                {
+                                                    "type": "Icon",
+                                                    "name": "Calendar",
+                                                    "size": "xSmall"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "Column",
+                                            "width": "stretch",
+                                            "items": [
+                                                {
+                                                    "type": "TextBlock",
+                                                    "text": "Feb26 – 1 / 6 – Sales Department Progress",
+                                                    "size": "Small",
+                                                    "wrap": true
+                                                }
+                                            ],
+                                            "spacing": "ExtraSmall"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "ColumnSet",
+                    "spacing": "Small",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": 30,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Meeting date",
+                                    "size": "Small",
+                                    "isSubtle": true
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": 65,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "27.01.2026",
+                                    "size": "Small"
+                                }
+                            ]
+                        }
+                    ],
+                    "separator": true
+                },
+                {
+                    "type": "ColumnSet",
+                    "spacing": "Small",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": 30,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Agenda item",
+                                    "size": "Small",
+                                    "isSubtle": true
+                                }
+                            ],
+                            "verticalContentAlignment": "Top"
+                        },
+                        {
+                            "type": "Column",
+                            "width": 65,
+                            "items": [
+                                {
+                                    "type": "ColumnSet",
+                                    "columns": [
+                                        {
+                                            "type": "Column",
+                                            "width": "stretch",
+                                            "items": [
+                                                {
+                                                    "type": "TextBlock",
+                                                    "text": "Product Go-To-Market Updates und Entscheidung über Höhe Marketing-Budget",
+                                                    "size": "Small",
+                                                    "wrap": true
+                                                }
+                                            ],
+                                            "verticalContentAlignment": "Top"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "separator": true
+                },
+                {
+                    "type": "ColumnSet",
+                    "spacing": "Small",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": 30,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Relation",
+                                    "size": "Small",
+                                    "isSubtle": true
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": 65,
+                            "items": [
+                                {
+                                    "type": "ColumnSet",
+                                    "spacing": "Small",
+                                    "columns": [
+                                        {
+                                            "type": "Column",
+                                            "width": "auto",
+                                            "items": [
+                                                {
+                                                    "type": "Icon",
+                                                    "name": "Target",
+                                                    "size": "xSmall"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "Column",
+                                            "width": "stretch",
+                                            "items": [
+                                                {
+                                                    "type": "TextBlock",
+                                                    "text": "Gezielte Marketing-Maßnahme...",
+                                                    "size": "Small",
+                                                    "wrap": true,
+                                                    "spacing": "None"
+                                                }
+                                            ],
+                                            "spacing": "ExtraSmall"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "separator": true
+                }
+            ],
+            "showBorder": true,
+            "bleed": true,
+            "separator": true
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "ColumnSet",
+                    "spacing": "None",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": "auto",
+                            "items": [
+                                {
+                                    "type": "ActionSet",
+                                    "actions": [
+                                        {
+                                            "type": "Action.Submit",
+                                            "title": "Submit",
+                                            "style": "positive"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": "auto",
+                            "items": [
+                                {
+                                    "type": "ActionSet",
+                                    "actions": [
+                                        {
+                                            "type": "Action.OpenUrl",
+                                            "title": "Open \"My Items\" in app",
+                                            "url": "https://your-app-url.com"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "separator": true,
+            "bleed": true,
+            "showBorder": true
+        },
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": "auto",
+                            "items": [
+                                {
+                                    "type": "Icon",
+                                    "name": "Clock",
+                                    "size": "xSmall"
+                                }
+                            ],
+                            "verticalContentAlignment": "Center"
+                        },
+                        {
+                            "type": "Column",
+                            "width": "auto",
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "Erinnerung versendet am 20.06.2025 um 09:00",
+                                    "size": "Default",
+                                    "isSubtle": true,
+                                    "spacing": "Small"
+                                }
+                            ],
+                            "verticalContentAlignment": "Center",
+                            "spacing": "ExtraSmall"
+                        }
+                    ],
+                    "horizontalAlignment": "Center"
+                }
+            ],
+            "separator": true,
+            "spacing": "None",
+            "style": "emphasis",
+            "bleed": true,
+            "showBorder": true
+        }
+    ],
+    "rtl": false,
+    "minHeight": "1px",
+    "fallbackText": "Date"
+}
