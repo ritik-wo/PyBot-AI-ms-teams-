@@ -53,30 +53,32 @@ def extract_task_section_template(full_template: dict) -> Optional[dict]:
         table_elements = []
         for i, item in enumerate(items):
             if isinstance(item, dict):
-                # Look for the table header (ColumnSet with "Progress item", "Type", "Due date")
-                if item.get("type") == "ColumnSet" and "Progress item" in str(item):
-                    table_elements.append(item)
-                    # Look for the first task row container
+                # Heuristic: treat a ColumnSet as the header if it is followed by a
+                # Container that looks like the first task row (has selectAction and
+                # task placeholders like tasks[0] or any {{tasks[...}} pattern).
+                if item.get("type") == "ColumnSet":
+                    # Look for the first task row container after this ColumnSet
                     for j in range(i + 1, len(items)):
                         next_item = items[j]
-                        if (
-                            isinstance(next_item, dict)
-                            and next_item.get("type") == "Container"
-                            and "tasks[0]" in str(next_item)
-                            and "selectAction" in next_item
-                        ):
-                            table_elements.append(next_item)
-                            # Look for the details container after it
-                            for k in range(j + 1, len(items)):
-                                details_item = items[k]
-                                if (
-                                    isinstance(details_item, dict)
-                                    and details_item.get("type") == "Container"
-                                    and details_item.get("id") == "details1"
-                                ):
-                                    table_elements.append(details_item)
-                                    break
-                            break
+                        if isinstance(next_item, dict) and next_item.get("type") == "Container" and "selectAction" in next_item:
+                            s = str(next_item)
+                            if ("tasks[0]" in s) or ("{{tasks[" in s):
+                                table_elements.append(item)  # header
+                                table_elements.append(next_item)  # first row
+                                # Look for the details container after it
+                                for k in range(j + 1, len(items)):
+                                    details_item = items[k]
+                                    if (
+                                        isinstance(details_item, dict)
+                                        and details_item.get("type") == "Container"
+                                        and (
+                                            details_item.get("id") == "details1"
+                                            or str(details_item.get("id", "")).startswith("details")
+                                        )
+                                    ):
+                                        table_elements.append(details_item)
+                                        break
+                                break
                 # Recurse into nested structures
                 if "items" in item:
                     result = find_table_structure(item["items"])
@@ -96,7 +98,7 @@ def extract_task_section_template(full_template: dict) -> Optional[dict]:
             "task_row_template": table_structure[1],
             "task_details_template": table_structure[2] if len(table_structure) > 2 else None,
         }
-    print("[ERROR] Could not find complete table structure in template")
+    print("[ERROR] Could not find complete table structure in template (no header+row+details match)")
     return None
 
 
