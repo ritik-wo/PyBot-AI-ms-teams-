@@ -1,68 +1,58 @@
 {
-    "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.19/MicrosoftTeams.schema.json",
-    "manifestVersion": "1.19",
-    "version": "2.0.6",
-    "id": "585f6c9e-5358-413f-b098-918bb0b4b140",
-    "developer": {
-      "name": "PyBot AI live",
-      "websiteUrl": "https://www.microsoft.com",
-      "privacyUrl": "https://www.teams.com/privacy",
-      "termsOfUseUrl": "https://www.teams.com/termsofuser"
-    },
-    "icons": {
-      "outline": "outline.png",
-      "color": "color.png"
-    },
-    "name": {
-      "short": "PyBot AI live",
-      "full": "PyBot AI live"
-      
-    },
-  "description": {
-    "short": "Demo bot for Teams showing conversation events with adaptive card support.",
-    "full": "This sample app showcases Teams bot conversation events and adaptive cards."
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.20/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.20",
+  "version": "1.0.6",
+  "id": "3158d329-d84e-457e-89ac-06a4fee8f422",
+  "name": {
+    "short": "ProgressMaker Teams App (DEV)",
+    "full": "ProgressMaker Teams App (DEV) - Meeting assistance with AI chat"
   },
-    "accentColor": "#FFFFFF",
-    "bots": [
-      {
-        "botId": "585f6c9e-5358-413f-b098-918bb0b4b140",
-        "scopes": [
-          "personal",
-          "groupChat",
-          "team"
-        ],
-        "isNotificationOnly": false,
-        "supportsCalling": false,
-        "supportsVideo": false,
-        "supportsFiles": false,
-          "commandLists": [
-          {
-            "scopes": [
-              "personal",
-              "groupChat",
-              "team"
-            ],
-            "commands": [
-              {
-                "title": "MentionMe",
-                "description": "Sends message with @mention of the sender"
-              },
-              {
-                "title": "Show Welcome",
-                "description": "Shows the welcome card"
-              },
-              {
-                "title": "MessageAllMembers",
-                "description": "Send 1 to 1 message to all members of the current conversation"
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "permissions": [
-      "identity",
-      "messageTeamMembers"
-    ],
-    "validDomains": ["pybot-ai-y04m.onrender.com/"]
+  "developer": {
+    "name": "ProgressMaker",
+    "websiteUrl": "https://www.progressmaker.io/",
+    "privacyUrl": "https://www.progressmaker.io/data-privacy/",
+    "termsOfUseUrl": "https://www.progressmaker.io/terms-conditions/"
+  },
+  "description": {
+    "short": "Meeting assistance app with AI chat",
+    "full": "Meeting assistance app for managing meeting agenda with integrated AI chat assistant"
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#FFFFFF",
+  "staticTabs": [
+    {
+      "entityId": "progressmaker-app-tab",
+      "name": "ProgressMaker",
+      "contentUrl": "https://epm-ms-team-app.vercel.app",
+      "websiteUrl": "https://epm-ms-team-app.vercel.app",
+      "scopes": ["personal"]
+    },
+    {
+      "entityId": "conversations",
+      "scopes": ["personal"]
+    }
+  ],
+  "bots": [
+    {
+      "botId": "17d8f648-daad-44b5-a8e0-3e52b54e13b8",
+      "scopes": ["personal"],
+      "supportsFiles": false,
+      "isNotificationOnly": false
+    }
+  ],
+  "validDomains": [
+    "epm-ms-team-app.vercel.app",
+    "pybot-ai-y04m.onrender.com",
+    "app.test.progressmaker.io",
+    "gateway.test.progressmaker.io",
+    "login.microsoftonline.com",
+    "graph.microsoft.com"
+  ],
+  "webApplicationInfo": {
+    "id": "17d8f648-daad-44b5-a8e0-3e52b54e13b8",
+    "resource": "api://epm-ms-team-app.vercel.app/17d8f648-daad-44b5-a8e0-3e52b54e13b8"
   }
+}

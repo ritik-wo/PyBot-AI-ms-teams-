@@ -17,6 +17,7 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+get_token.py
 
 # Environment and secrets
 .env

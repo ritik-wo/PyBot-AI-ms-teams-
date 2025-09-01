@@ -26,6 +26,7 @@ from pathlib import Path
 
 # Import the message service
 from api.message_service import send_message_to_user_service, update_card_service
+from api.message_service import send_deadline_to_user_service
 
 # Explicitly load the .env file from the project root
 load_dotenv(dotenv_path=Path('.') / '.env')
@@ -163,6 +164,27 @@ APP.router.add_post("/api/messages", messages)
 APP.router.add_post("/api/send-message-to-all", send_message_to_all)
 APP.router.add_post("/api/send-message-to-user", send_message_to_user)
  
+# Endpoint to send a deadline card (based on pre-meeting sample-exm.json) to a specific user
+async def send_deadline_to_user(req: Request) -> Response:
+    data = await req.json()
+    email = data.get("email")
+    # Accept payload data as 'data' or 'card_data' or inline
+    card_data = data.get("data") or data.get("card_data")
+    if not card_data:
+        # Inline style extraction similar to send_message_to_user()
+        possible_keys = {"dueDate", "meeting", "tasks"}
+        if any(k in data for k in possible_keys):
+            card_data = {k: v for k, v in data.items() if k not in {"email"}}
+    if not email or not card_data:
+        return json_response({"error": "Missing 'email' or 'data' in payload"}, status=400)
+
+    return await send_deadline_to_user_service(
+        email=email,
+        adapter=ADAPTER,
+        app_id=CONFIG.APP_ID,
+        data_source=card_data,
+    )
+ 
 async def update_card(req: Request) -> Response:
     data = await req.json()
     activity_id = data.get("activity_id")
@@ -174,6 +196,7 @@ async def update_card(req: Request) -> Response:
     return await update_card_service(activity_id, chat_id, ADAPTER, CONFIG.APP_ID, card_name, conversation_reference)
 
 APP.router.add_post("/api/update-card", update_card)
+APP.router.add_post("/api/send-deadline-to-user", send_deadline_to_user)
 APP.router.add_get("/", root)
 
 if __name__ == "__main__":

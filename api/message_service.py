@@ -9,7 +9,20 @@ from api.graph_api import (
     send_card_message_to_chat
 )
 from api.bot_framework_api import send_message_via_bot_framework
-from typing import Optional
+from typing import List, Optional, Tuple, Any
+from api.cards.upcoming_deadline import (
+    load_upcoming_deadline_template as _ud_load_template,
+    build_upcoming_deadline_card as _ud_build_card,
+)
+from api.cards.tasks_assigned import (
+    build_dynamic_card_with_tasks as _ta_build_card,
+    extract_task_section_template as _ta_extract_section,
+    generate_task_sections as _ta_generate_sections,
+    inject_task_sections_into_card as _ta_inject_sections,
+)
+from api.cards.utils import (
+    populate_placeholders as _cards_populate_placeholders,
+)
 
 def load_tasks_assigned_card():
     """Load the TasksAssignedToUser adaptive card template"""
@@ -130,294 +143,45 @@ def load_sample_data() -> Optional[dict]:
         return None
 
 def build_dynamic_card_with_tasks(data: dict) -> dict:
-    """Build dynamic card using task_assigning_card_template.json as base and injecting task sections"""
-    import copy
-    
-    print(f"[DEBUG] Building dynamic card with task injection...")
-    
-    # Load base template (header + footer)
-    base_template = load_card_by_name("task_assigning_card_template.json")
-    if not base_template:
-        print(f"[ERROR] Failed to load base template")
-        return None
-    
-    # Load full template to extract task section
-    full_template = load_card_by_name("TasksAssignedToUser.json")
-    if not full_template:
-        print(f"[ERROR] Failed to load full template for task extraction")
-        return None
-    
-    # Get task count
-    tasks = data.get('tasks', [])
-    task_count = len(tasks)
-    print(f"[DEBUG] Detected {task_count} tasks in data")
-    
-    # Extract task section template
-    task_section_template = extract_task_section_template(full_template)
-    if not task_section_template:
-        print(f"[ERROR] Failed to extract task section template")
-        return None
-    
-    # Build dynamic card
-    dynamic_card = copy.deepcopy(base_template)
-    
-    # Generate task sections and inject them
-    if task_count > 0:
-        task_sections = generate_task_sections(task_section_template, task_count, tasks)
-        inject_task_sections_into_card(dynamic_card, task_sections)
-    
-    # Populate all placeholders
-    populated_card = populate_placeholders(dynamic_card, data)
-    
-    print(f"[DEBUG] ✅ Dynamic card built successfully with {task_count} tasks")
-    return populated_card
+    """Thin wrapper delegating to api.cards.tasks_assigned.build_dynamic_card_with_tasks"""
+    return _ta_build_card(data)
 
 def extract_task_section_template(full_template: dict) -> dict:
-    """Extract the complete task section template including table header and task rows"""
-    try:
-        print(f"[DEBUG] Extracting task section template with table structure...")
-        
-        # Look for the table structure in the template
-        def find_table_structure(items):
-            table_elements = []
-            
-            for i, item in enumerate(items):
-                if isinstance(item, dict):
-                    # Look for the table header (ColumnSet with "Progress item", "Type", "Due date")
-                    if (item.get('type') == 'ColumnSet' and 
-                        'Progress item' in str(item)):
-                        print(f"[DEBUG] Found table header at index {i}")
-                        table_elements.append(item)
-                        
-                        # Look for the first task row (Container with tasks[0])
-                        for j in range(i + 1, len(items)):
-                            next_item = items[j]
-                            if (isinstance(next_item, dict) and 
-                                next_item.get('type') == 'Container' and 
-                                'tasks[0]' in str(next_item) and 
-                                'selectAction' in next_item):
-                                print(f"[DEBUG] Found first task row at index {j}")
-                                table_elements.append(next_item)
-                                
-                                # Look for the details container
-                                for k in range(j + 1, len(items)):
-                                    details_item = items[k]
-                                    if (isinstance(details_item, dict) and 
-                                        details_item.get('type') == 'Container' and 
-                                        details_item.get('id') == 'details1'):
-                                        print(f"[DEBUG] Found details container at index {k}")
-                                        table_elements.append(details_item)
-                                        break
-                                break
-                        
-                        if len(table_elements) >= 2:  # At least header + one task row
-                            print(f"[DEBUG] ✅ Found complete table structure with {len(table_elements)} elements")
-                            return table_elements
-                    
-                    # Recursively search in nested items
-                    if 'items' in item:
-                        result = find_table_structure(item['items'])
-                        if result:
-                            return result
-                    
-                    # Also check in body if it exists
-                    if 'body' in item:
-                        result = find_table_structure(item['body'])
-                        if result:
-                            return result
-            
-            return None
-        
-        # Start searching from the body
-        body = full_template.get('body', [])
-        table_structure = find_table_structure(body)
-        
-        if table_structure and len(table_structure) >= 2:
-            # Return the table header and task template
-            return {
-                "table_header": table_structure[0],  # The ColumnSet with headers
-                "task_row_template": table_structure[1],  # The Container with task[0] data
-                "task_details_template": table_structure[2] if len(table_structure) > 2 else None
-            }
-        
-        print(f"[ERROR] Could not find complete table structure in template")
-        return None
-        
-    except Exception as e:
-        print(f"[ERROR] Failed to extract task section template: {e}")
-        return None
+    """Thin wrapper delegating to api.cards.tasks_assigned.extract_task_section_template"""
+    return _ta_extract_section(full_template)
 
 def generate_task_sections(task_template: dict, task_count: int, tasks: list) -> list:
-    """Generate table header + N task rows based on template structure and set icons per task."""
-    import copy
-    import json
-    
-    print(f"[DEBUG] Generating table with {task_count} task rows...")
-    
-    if not task_template or not isinstance(task_template, dict):
-        print(f"[ERROR] Invalid task template provided")
-        return []
-    
-    table_sections = []
-    
-    # Add the table header first (only once)
-    if 'table_header' in task_template:
-        table_sections.append(copy.deepcopy(task_template['table_header']))
-        print(f"[DEBUG] Added table header")
-    
-    # Generate task rows
-    task_row_template = task_template.get('task_row_template')
-    task_details_template = task_template.get('task_details_template')
-    
-    if not task_row_template:
-        print(f"[ERROR] No task row template found")
-        return table_sections
-    
-    for i in range(task_count):
-        # Deep copy the task row template
-        task_row = copy.deepcopy(task_row_template)
-        
-        # Convert to string for replacement
-        row_str = json.dumps(task_row)
-        
-        # Replace task[0] with task[i] and details1 with details{i+1}
-        row_str = row_str.replace('tasks[0]', f'tasks[{i}]')
-        row_str = row_str.replace('details1', f'details{i+1}')
-        
-        # Convert back to dict
-        try:
-            updated_row = json.loads(row_str)
-            # Set icon for this row based on task type
-            try:
-                icon_name = get_icon_for_task_type(tasks[i].get('type'))
-                _set_icons_in_subtree(updated_row, icon_name)
-            except Exception:
-                pass
-            # Fix selectAction so this row toggles only its own details container
-            try:
-                _fix_row_toggle_action(updated_row, details_id=f"details{i+1}")
-            except Exception:
-                pass
-            table_sections.append(updated_row)
-        except json.JSONDecodeError as e:
-            print(f"[ERROR] Failed to parse updated task row: {e}")
-            continue
-        
-        # Add the details container if available
-        if task_details_template:
-            task_details = copy.deepcopy(task_details_template)
-            
-            # Convert to string for replacement
-            details_str = json.dumps(task_details)
-            
-            # Replace task[0] with task[i] and details1 with details{i+1}
-            details_str = details_str.replace('tasks[0]', f'tasks[{i}]')
-            details_str = details_str.replace('details1', f'details{i+1}')
-            
-            # Convert back to dict
-            try:
-                updated_details = json.loads(details_str)
-                # Set icon(s) inside the details section as well (if any)
-                try:
-                    icon_name = get_icon_for_task_type(tasks[i].get('type'))
-                    _set_icons_in_subtree(updated_details, icon_name)
-                except Exception:
-                    pass
-                table_sections.append(updated_details)
-            except json.JSONDecodeError as e:
-                print(f"[ERROR] Failed to parse updated task details: {e}")
-                continue
-    
-    print(f"[DEBUG] ✅ Generated table with {len(table_sections)} elements (1 header + {task_count} task rows + details)")
-    return table_sections
+    """Thin wrapper delegating to api.cards.tasks_assigned.generate_task_sections"""
+    return _ta_generate_sections(task_template, task_count, tasks)
 
 def inject_task_sections_into_card(card: dict, task_sections: list):
-    """Inject task sections into card body before the footer"""
-    print(f"[DEBUG] Injecting {len(task_sections)} task sections into card...")
-    
-    body = card.get('body', [])
-    
-    # Find insertion point (before the action button container)
-    insertion_index = len(body) - 1  # Default to before last item
-    
-    for i, item in enumerate(body):
-        if isinstance(item, dict) and item.get('type') == 'Container':
-            # Check if this container has ActionSet (footer)
-            items = item.get('items', [])
-            for sub_item in items:
-                if isinstance(sub_item, dict) and sub_item.get('type') == 'ActionSet':
-                    insertion_index = i
-                    break
-    
-    # Insert task sections at the found position
-    for i, task_section in enumerate(task_sections):
-        body.insert(insertion_index + i, task_section)
-    
-    print(f"[DEBUG] ✅ Task sections injected at position {insertion_index}")
+    """Thin wrapper delegating to api.cards.tasks_assigned.inject_task_sections_into_card"""
+    return _ta_inject_sections(card, task_sections)
 
 def populate_placeholders(template: dict, data: dict) -> dict:
-    """Populate template placeholders with data"""
-    import re
-    
-    def replace_placeholders(obj):
-        if isinstance(obj, dict):
-            return {key: replace_placeholders(value) for key, value in obj.items()}
-        elif isinstance(obj, list):
-            return [replace_placeholders(item) for item in obj]
-        elif isinstance(obj, str):
-            # Replace {{placeholder}} with actual data
-            def replacer(match):
-                placeholder = match.group(1)
-                try:
-                    # Handle nested properties like tasks[0].title
-                    if '[' in placeholder and ']' in placeholder:
-                        # Parse array access like tasks[0].title
-                        parts = placeholder.split('.')
-                        result = data
-                        for part in parts:
-                            if '[' in part and ']' in part:
-                                # Handle array access
-                                array_name = part.split('[')[0]
-                                index = int(part.split('[')[1].split(']')[0])
-                                result = result[array_name][index]
-                            else:
-                                result = result[part]
-                        return str(result)
-                    else:
-                        # Simple property access
-                        parts = placeholder.split('.')
-                        result = data
-                        for part in parts:
-                            result = result[part]
-                        return str(result)
-                except (KeyError, IndexError, TypeError):
-                    print(f"[WARN] Placeholder not found in data: {placeholder}")
-                    return match.group(0)  # Return original if not found
-            
-            return re.sub(r'\{\{([^}]+)\}\}', replacer, obj)
-        else:
-            return obj
-    
-    print(f"[DEBUG] Populating placeholders...")
-    populated_card = replace_placeholders(template)
-    
-    # Normalize icons globally per request (e.g., CheckmarkCircle -> Info)
-    try:
-        populated_card = replace_icon_names(populated_card, from_name='CheckmarkCircle', to_name='Info')
-    except Exception as _e:
-        print(f"[WARN] Icon normalization skipped due to error: {_e}")
-    
-    print(f"[DEBUG] ✅ Placeholders populated successfully")
-    return populated_card
+    """Thin wrapper delegating to api.cards.utils.populate_placeholders"""
+    return _cards_populate_placeholders(template, data)
 
 def get_icon_for_task_type(task_type: str) -> str:
-    """Simple mapping from task type to icon name."""
+    """Map task type to an Adaptive Card icon name.
+    - Case-insensitive, trims whitespace
+    - Handles common typos/synonyms
+    """
+    if task_type is None:
+        return 'CheckmarkStarburst'
+    key = str(task_type).strip().lower()
+    # Common variants
     mapping = {
-        'Agreement': 'CheckmarkStarburst',
-        'Decision': 'Diamond',
-        'Issue': 'Info',
+        'agreement': 'CheckmarkStarburst',
+        'vereinbarung': 'CheckmarkStarburst',  # de
+        'decision': 'Diamond',
+        'decison': 'Diamond',  # typo
+        'decisonj': 'Diamond',  # reported typo
+        'entscheidung': 'Diamond',  # de
+        'issue': 'Info',
+        'info': 'Info',
     }
-    return mapping.get(task_type, 'CheckmarkStarburst')
+    return mapping.get(key, 'CheckmarkStarburst')
 
 def _set_icons_in_subtree(obj, icon_name: str):
     """Update Icon elements within a given subtree."""
@@ -448,8 +212,8 @@ def _fix_row_toggle_action(row_container: dict, details_id: str):
             for _, v in obj.items():
                 visit(v)
         elif isinstance(obj, list):
-            for item in obj:
-                visit(item)
+            for v in obj:
+                visit(v)
     visit(row_container)
 
 def replace_icon_names(obj, from_name: str, to_name: str):
@@ -468,6 +232,420 @@ def replace_icon_names(obj, from_name: str, to_name: str):
 def populate_card_template(template: dict, data: dict) -> dict:
     """Legacy function - kept for backward compatibility"""
     return populate_placeholders(template, data)
+
+# ===== DEADLINE CARD (pre-meeting sample-exm.json) UTILITIES =====
+def load_task_status_template() -> Optional[dict]:
+    """Load the pre-meeting task status template taskStatus.json"""
+    return load_card_by_name("taskStatus.json")
+
+def build_task_status_card(data: dict) -> Optional[dict]:
+    """Build the task status card using taskStatus.json and placeholder population.
+    This ensures the first column (Progress item) binds to tasks[i].title exactly as the template defines.
+    """
+    template = load_task_status_template()
+    if not template:
+        print("[ERROR] taskStatus.json template not found")
+        return None
+    try:
+        return populate_placeholders(template, data)
+    except Exception as e:
+        print(f"[ERROR] Failed to populate taskStatus template: {e}")
+        return None
+def load_deadline_template() -> Optional[dict]:
+    """Load the pre-meeting deadline template sample-exm.json"""
+    return load_card_by_name("sample-exm.json")
+
+# ===== UPCOMING DEADLINE (dynamic rows) =====
+def load_upcoming_deadline_template() -> Optional[dict]:
+    """Thin wrapper delegating to api.cards.upcoming_deadline.load_upcoming_deadline_template"""
+    return _ud_load_template()
+
+def _build_task_row_from_reference(task: dict, details_id: str) -> dict:
+    """Delegates to api.cards.upcoming_deadline._build_task_row_from_reference"""
+    from api.cards.upcoming_deadline import _build_task_row_from_reference as _impl
+    return _impl(task, details_id)
+
+def _build_task_details_from_reference(task: dict, details_id: str) -> dict:
+    """Delegates to api.cards.upcoming_deadline._build_task_details_from_reference"""
+    from api.cards.upcoming_deadline import _build_task_details_from_reference as _impl
+    return _impl(task, details_id)
+
+def build_upcoming_deadline_card(data: dict) -> Optional[dict]:
+    """Thin wrapper delegating to api.cards.upcoming_deadline.build_upcoming_deadline_card"""
+    return _ud_build_card(data)
+
+def _find_first_task_row_and_details(card: dict):
+    """Locate the first task row Container and its details Container (id=details1) in sample-exm.json.
+    Returns (row_template, details_template, insertion_parent_index, insertion_index_start)
+    where insertion indices refer to the parent 'items' list that contains the table header and subsequent rows.
+    """
+    body = card.get('body', [])
+    # Card structure: body[0]=header, body[1]=meeting title, body[2]=table+rows containers...
+    # We need to find the container that holds the table header ColumnSet and after it, the first row container.
+    table_container = None
+    for item in body:
+        if isinstance(item, dict) and item.get('type') == 'Container':
+            items = item.get('items', [])
+            for sub in items:
+                if isinstance(sub, dict) and sub.get('type') == 'ColumnSet':
+                    # Header row has text: Progress item, Type, Due date
+                    if 'Progress item' in str(sub) and 'Due date' in str(sub):
+                        table_container = item
+                        break
+            if table_container:
+                break
+
+    if not table_container:
+        return None, None, None, None
+
+    items = table_container.get('items', [])
+    # The header ColumnSet is at items[0], first task row Container is items[1], then details1 is items[2]
+    row_template = None
+    details_template = None
+    insertion_index_start = 1  # after header
+    for i in range(1, len(items)):
+        it = items[i]
+        if isinstance(it, dict) and it.get('type') == 'Container' and it.get('selectAction'):
+            row_template = it
+            # Next visible details container 'id': 'details1'
+            if i + 1 < len(items):
+                maybe_details = items[i+1]
+                if isinstance(maybe_details, dict) and maybe_details.get('type') == 'Container' and maybe_details.get('id', '').startswith('details'):
+                    details_template = maybe_details
+            break
+
+    if not row_template or not details_template:
+        return None, None, None, None
+
+    return row_template, details_template, body.index(table_container), insertion_index_start
+
+def _set_text_in_obj(obj: dict, predicate, value: str):
+    """Find first TextBlock matching predicate and set its text"""
+    found = False
+    def visit(o):
+        nonlocal found
+        if found:
+            return
+        if isinstance(o, dict):
+            if o.get('type') == 'TextBlock' and predicate(o):
+                o['text'] = value
+                found = True
+            else:
+                for _, v in o.items():
+                    visit(v)
+        elif isinstance(o, list):
+            for v in o:
+                visit(v)
+    visit(obj)
+    return found
+
+def _set_toggle_in_subtree(obj, value: bool):
+    """Set 'value' on any Input.Toggle elements within the given subtree.
+    This aligns with the behavior defined in resources/pre-meeting-cards/taskStatus.json.
+    """
+    if isinstance(obj, dict):
+        if obj.get('type') == 'Input.Toggle':
+            # Adaptive Cards Input.Toggle uses boolean or string "true"/"false"
+            obj['value'] = True if value else False
+        for _, v in obj.items():
+            _set_toggle_in_subtree(v, value)
+    elif isinstance(obj, list):
+        for item in obj:
+            _set_toggle_in_subtree(item, value)
+
+def _is_task_completed(task: dict) -> bool:
+    """Infer completion from task fields.
+    Supports either a boolean 'completed'/'isDone' or a string 'status' with values like 'done', 'completed', 'closed'.
+    """
+    if not isinstance(task, dict):
+        return False
+    if isinstance(task.get('completed'), bool):
+        return task['completed']
+    if isinstance(task.get('isDone'), bool):
+        return task['isDone']
+    status = str(task.get('status', '')).strip().lower()
+    return status in {'done', 'completed', 'closed', 'resolved'}
+
+def _set_progress_item_in_row(row: dict, value: str) -> bool:
+    """Set the first column's TextBlock (the 'Progress item' column) in a task row.
+    We locate the top-level ColumnSet inside the row Container and update the first
+    Column's first TextBlock, avoiding accidental matches in other columns.
+    """
+    try:
+        if not isinstance(row, dict):
+            return False
+        # Row container typically has one top-level ColumnSet in its items
+        for item in row.get('items', []) or []:
+            if isinstance(item, dict) and item.get('type') == 'ColumnSet':
+                cols = item.get('columns', []) or []
+                if not cols:
+                    continue
+                first_col = cols[0]
+                # Update ALL TextBlocks in the first column to be safe (template may have sample date)
+                updated_any = False
+                stack = [first_col]
+                while stack:
+                    node = stack.pop()
+                    if isinstance(node, dict):
+                        if node.get('type') == 'TextBlock':
+                            node['text'] = str(value)
+                            updated_any = True
+                        for k in ('items', 'columns'):
+                            if k in node and isinstance(node[k], list):
+                                stack.extend(reversed(node[k]))
+                if updated_any:
+                    return True
+                # If no TextBlock found in first column, keep searching next items
+        return False
+    except Exception:
+        return False
+def _set_text_by_label_section(container: dict, label_text: str, value: str) -> bool:
+    """In a details container, find a ColumnSet section whose left label TextBlock equals
+    label_text (e.g., 'Meeting origin', 'Meeting date', 'Agenda item', 'Relation'), then set
+    the primary TextBlock on the right side to value. Returns True if set.
+
+    Relies on template labels remaining constant, but not on any example data values.
+    """
+    try:
+        items = container.get('items', [])
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            if item.get('type') != 'ColumnSet':
+                continue
+            cols = item.get('columns', [])
+            if len(cols) < 2:
+                continue
+            # Left label column
+            left = cols[0]
+            left_lbls = [it for it in left.get('items', []) if isinstance(it, dict) and it.get('type') == 'TextBlock']
+            if any(tb.get('text') == label_text for tb in left_lbls):
+                # Right content column (may be nested ColumnSet)
+                right = cols[1]
+                # Prefer deepest TextBlock with wrap or Small size
+                stack = [right]
+                while stack:
+                    node = stack.pop()
+                    if isinstance(node, dict):
+                        if node.get('type') == 'TextBlock':
+                            node['text'] = str(value)
+                            return True
+                        for k in ('items', 'columns'):
+                            if k in node and isinstance(node[k], list):
+                                stack.extend(reversed(node[k]))
+        return False
+    except Exception:
+        return False
+
+def _set_due_date_in_row(row: dict, value: str) -> bool:
+    """Find the due date TextBlock in a row by locating the ColumnSet that also contains an
+    Input.Toggle (the due date + toggle + info icon cluster) and set its TextBlock text.
+    Avoids matching any static example value.
+    """
+    try:
+        # Walk all ColumnSets; look for one having an Input.Toggle somewhere
+        stack = [row]
+        while stack:
+            node = stack.pop()
+            if not isinstance(node, dict):
+                continue
+            if node.get('type') == 'ColumnSet':
+                # detect toggle presence
+                has_toggle = False
+                for col in node.get('columns', []) or []:
+                    for it in col.get('items', []) or []:
+                        if isinstance(it, dict) and it.get('type') == 'Input.Toggle':
+                            has_toggle = True
+                            break
+                        # nested structures
+                        if isinstance(it, dict) and it.get('type') == 'ColumnSet':
+                            for subcol in it.get('columns', []) or []:
+                                for sit in subcol.get('items', []) or []:
+                                    if isinstance(sit, dict) and sit.get('type') == 'Input.Toggle':
+                                        has_toggle = True
+                                        break
+                                if has_toggle:
+                                    break
+                        if has_toggle:
+                            break
+                    if has_toggle:
+                        break
+                if has_toggle:
+                    # set the first TextBlock in this ColumnSet
+                    for col in node.get('columns', []) or []:
+                        for it in col.get('items', []) or []:
+                            if isinstance(it, dict) and it.get('type') == 'TextBlock':
+                                it['text'] = str(value)
+                                return True
+            # continue walking
+            for k in ('items', 'columns'):
+                if k in node and isinstance(node[k], list):
+                    stack.extend(reversed(node[k]))
+        return False
+    except Exception:
+        return False
+    if isinstance(task.get('completed'), bool):
+        return task['completed']
+    if isinstance(task.get('isDone'), bool):
+        return task['isDone']
+    status = str(task.get('status', '')).strip().lower()
+    return status in {'done', 'completed', 'closed', 'resolved'}
+
+def build_deadline_card_from_sample_exm(data: dict) -> Optional[dict]:
+    """Builds a deadline card exactly like sample-exm.json but populated from provided data.
+    Expected data shape: { dueDate: string, meeting: { type: string }, tasks: [ {title,type,dueDate,detailsTitle,meetingOrigin,meetingDate,agendaItem,relation} ] }
+    Supports N tasks (>=1).
+    """
+    import copy, json as _json
+    template = load_deadline_template()
+    if not template:
+        print("[ERROR] Deadline template not found")
+        return None
+
+    card = copy.deepcopy(template)
+
+    # Populate badge text and meeting title
+    try:
+        badge_text = str(data.get('dueDate', ''))
+        meeting_title = str(data.get('meeting', {}).get('type', ''))
+
+        # Badge lives under first ColumnSet -> second Column -> Badge.text
+        def set_badge(o):
+            if isinstance(o, dict):
+                if o.get('type') == 'Badge' and 'text' in o:
+                    o['text'] = badge_text
+                for v in o.values():
+                    set_badge(v)
+            elif isinstance(o, list):
+                for v in o:
+                    set_badge(v)
+        set_badge(card)
+
+        # Meeting title TextBlock directly after header container
+        _set_text_in_obj(card, lambda tb: tb.get('text') == 'Strategie 2030', meeting_title or ' ')
+    except Exception as e:
+        print(f"[WARN] Failed to set header fields: {e}")
+
+    # Extract row/details templates
+    row_tmpl, details_tmpl, parent_idx, insert_start = _find_first_task_row_and_details(card)
+    if row_tmpl is None or details_tmpl is None:
+        print("[ERROR] Could not locate row/details templates in sample-exm.json")
+        return None
+
+    tasks = data.get('tasks', []) or []
+    if len(tasks) == 0:
+        print("[WARN] No tasks provided; card will contain header only")
+    
+    # Build rows and details for each task
+    parent_container = card['body'][parent_idx]
+    items = parent_container['items']
+    # Detect optional footer (container containing an ActionSet) to preserve and re-append later
+    footer_tail = []
+    try:
+        for j in range(len(items) - 1, -1, -1):
+            it = items[j]
+            if isinstance(it, dict) and it.get('type') == 'Container':
+                sub_items = it.get('items', [])
+                if any(isinstance(s, dict) and s.get('type') == 'ActionSet' for s in sub_items):
+                    footer_tail = items[j:]
+                    break
+    except Exception:
+        footer_tail = []
+
+    # Keep the header (items[0]); we'll remove existing rows/details and then inject new
+    parent_container['items'] = [items[0]]
+
+    for idx, t in enumerate(tasks, start=1):
+        # Row
+        row = copy.deepcopy(row_tmpl)
+        # Fix selectAction to target only this details id
+        details_id = f"details{idx}"
+        try:
+            if 'selectAction' in row and isinstance(row['selectAction'], dict):
+                row['selectAction']['targetElements'] = [{ 'elementId': details_id, 'isVisible': True }]
+        except Exception:
+            pass
+
+        # Set row fields: title, type, due date, and icon by type
+        try:
+            # Progress item (first column) — map to task title by default
+            _set_progress_item_in_row(row, str(t.get('title', '')))
+            # type text (the small wrapped text next to the icon)
+            _set_text_in_obj(row, lambda tb: tb.get('wrap') is True and tb.get('size') == 'Small', str(t.get('type', '')))
+            # due date (TextBlock in the cluster with Input.Toggle)
+            if not _set_due_date_in_row(row, str(t.get('dueDate', ''))):
+                # fallback: set any small TextBlock that is not the title
+                _set_text_in_obj(row, lambda tb: tb.get('size') == 'Small' and tb.get('maxLines') is None, str(t.get('dueDate', '')))
+            # icon
+            icon_name = get_icon_for_task_type(str(t.get('type', '')))
+            _set_icons_in_subtree(row, icon_name)
+            # toggle (completion status) — incorporate taskStatus.json behavior
+            _set_toggle_in_subtree(row, _is_task_completed(t))
+        except Exception as e:
+            print(f"[WARN] Failed to populate row {idx}: {e}")
+
+        parent_container['items'].append(row)
+
+        # Details
+        details = copy.deepcopy(details_tmpl)
+        try:
+            details['id'] = details_id
+        except Exception:
+            pass
+        try:
+            # detailsTitle
+            _set_text_in_obj(details, lambda tb: tb.get('size') == 'Medium' and tb.get('weight') == 'Bolder', str(t.get('detailsTitle', '')))
+            # meetingOrigin by label section
+            _set_text_by_label_section(details, 'Meeting origin', str(t.get('meetingOrigin', '')))
+            # meetingDate by label section
+            _set_text_by_label_section(details, 'Meeting date', str(t.get('meetingDate', '')))
+            # agendaItem by label section
+            _set_text_by_label_section(details, 'Agenda item', str(t.get('agendaItem', '')))
+            # relation by label section
+            _set_text_by_label_section(details, 'Relation', str(t.get('relation', '')))
+            # icons within details
+            _set_icons_in_subtree(details, get_icon_for_task_type(str(t.get('type', ''))))
+            # propagate toggle state to any toggles in details if present
+            _set_toggle_in_subtree(details, _is_task_completed(t))
+        except Exception as e:
+            print(f"[WARN] Failed to populate details {idx}: {e}")
+
+        parent_container['items'].append(details)
+
+    # Re-append preserved footer (if any)
+    if footer_tail:
+        parent_container['items'].extend(footer_tail)
+
+    # Enforce single-details visibility behavior: each row's tap shows only its own details
+    try:
+        # Collect all detail ids we created
+        detail_ids = [f"details{idx}" for idx in range(1, len(tasks) + 1)]
+        # Walk through items to find row containers in order
+        row_idx = 0
+        for it in parent_container['items']:
+            if isinstance(it, dict) and it.get('type') == 'Container' and it.get('selectAction'):
+                row_idx += 1
+                my_details = f"details{row_idx}"
+                targets = [{ 'elementId': my_details, 'isVisible': True }]
+                for did in detail_ids:
+                    if did != my_details:
+                        targets.append({ 'elementId': did, 'isVisible': False })
+                try:
+                    it['selectAction']['targetElements'] = targets
+                except Exception:
+                    pass
+        # Add card-level selectAction to close all details when clicking outside rows
+        try:
+            card['selectAction'] = {
+                'type': 'Action.ToggleVisibility',
+                'targetElements': [ { 'elementId': did, 'isVisible': False } for did in detail_ids ]
+            }
+        except Exception:
+            pass
+    except Exception as e:
+        print(f"[WARN] Failed to enforce single-details visibility: {e}")
+
+    return card
 
 async def send_message_to_user_service(email, message, adapter, app_id, card_name=None, conversation_reference: Optional[dict] = None, card_data: Optional[dict] = None):
     """Main service function to send messages to users using hybrid approach"""
@@ -572,6 +750,68 @@ async def send_message_to_user_service(email, message, adapter, app_id, card_nam
         print(f"[ERROR] Exception message: {str(e)}")
         import traceback
         print(f"[ERROR] Full traceback: {traceback.format_exc()}")
+        return json_response({"error": str(e)}, status=500)
+
+async def send_deadline_to_user_service(email: str, adapter, app_id: str, data_source: dict):
+    """Builds the deadline card (sample-exm.json style) from provided data and sends it to the given email.
+    Tries Bot Framework proactive messaging first; falls back to Graph API chat.
+    """
+    try:
+        print("[DEBUG] ===== STARTING DEADLINE MESSAGE SERVICE =====")
+        print(f"[DEBUG] Target email: {email}")
+        # Build the card
+        adaptive_card = build_deadline_card_from_sample_exm(data_source)
+        if not adaptive_card:
+            return json_response({"error": "Failed to build deadline card from template"}, status=500)
+
+        # Graph fundamentals
+        print(f"[DEBUG] Getting fresh Graph API access token...")
+        access_token = get_fresh_graph_access_token()
+        print(f"[DEBUG] ✅ Access token obtained successfully")
+
+        print(f"[DEBUG] Looking up user by email...")
+        user = find_user_by_email(email, access_token)
+        if not user:
+            return json_response({"error": f"User with email {email} not found"}, status=404)
+
+        # Try Bot Framework first if we have a conversation reference
+        try:
+            from bots.teams_conversation_bot import CONVERSATION_REFERENCE
+            if CONVERSATION_REFERENCE:
+                print(f"[DEBUG] 🔄 Trying Bot Framework approach for deadline card...")
+                result = await send_message_via_bot_framework_with_card(
+                    user, adaptive_card, adapter, CONVERSATION_REFERENCE, app_id
+                )
+                print(f"[DEBUG] ✅ Bot Framework approach successful")
+                return json_response(result)
+            else:
+                print(f"[DEBUG] ⚠️ No conversation reference available, trying Graph API")
+                raise Exception("No conversation reference")
+        except Exception as bot_error:
+            print(f"[DEBUG] ❌ Bot Framework approach failed: {bot_error}")
+            print(f"[DEBUG] 🔄 Falling back to Graph API approach...")
+            try:
+                chat_id = get_or_create_chat_with_user(user["id"], access_token)
+                if not chat_id:
+                    return json_response({"error": f"Could not find or create chat for user {email}"}, status=500)
+                message_data = send_adaptive_card_to_chat(chat_id, adaptive_card, access_token)
+                return json_response({
+                    "status": f"Deadline card sent to {email}",
+                    "method": "graph_api",
+                    "chat_id": chat_id,
+                    "user_id": user["id"],
+                    "message_id": message_data.get('id') if isinstance(message_data, dict) else None
+                })
+            except Exception as graph_error:
+                return json_response({
+                    "error": "Both Bot Framework and Graph API approaches failed.",
+                    "bot_error": str(bot_error),
+                    "graph_error": str(graph_error)
+                }, status=500)
+    except Exception as e:
+        print(f"[ERROR] ❌ CRITICAL ERROR in send_deadline_to_user_service: {e}")
+        import traceback
+        print(traceback.format_exc())
         return json_response({"error": str(e)}, status=500)
 
 async def send_message_via_bot_framework_with_card(user, adaptive_card, adapter, conversation_reference, app_id):

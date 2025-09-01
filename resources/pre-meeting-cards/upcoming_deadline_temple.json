@@ -1,0 +1,146 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+  "speak": "Upcoming deadline for your progress item",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "Upcoming deadline for your progress item",
+              "size": "Large",
+              "weight": "Bolder",
+              "color": "Default",
+              "spacing": "None",
+              "style": "heading"
+            }
+          ],
+          "verticalContentAlignment": "Center"
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "verticalContentAlignment": "Center",
+          "items": [
+            {
+              "type": "Badge",
+              "text": "{dueDate}",
+              "style": "Attention",
+              "appearance": "Tint",
+              "spacing": "None"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "width": "stretch",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "{{meeting.type}}",
+          "size": "Default",
+          "weight": "Bolder",
+          "color": "Default",
+          "spacing": "None",
+          "style": "heading"
+        }
+      ],
+      "verticalContentAlignment": "Center"
+    },
+    {
+      "type": "Container",
+      "spacing": "ExtraSmall",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": 3,
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Progress item",
+                  "weight": "Lighter",
+                  "color": "Default",
+                  "size": "Small"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": 2,
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Type",
+                  "weight": "Lighter",
+                  "color": "Default",
+                  "size": "Small"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": 2,
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "Due date",
+                  "weight": "Lighter",
+                  "color": "Default",
+                  "size": "Small"
+                }
+              ]
+            }
+          ],
+          "spacing": "None",
+          "separator": true
+        },
+        {
+          "type": "Container",
+          "id": "rowsContainer",
+          "items": []
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Submit",
+              "title": "Save",
+              "tooltip": "Save ",
+              "style": "positive"
+            },
+            {
+              "type": "Action.Submit",
+              "title": "Open My Progressmaker"
+            }
+          ],
+          "spacing": "None"
+        }
+      ],
+      "horizontalAlignment": "Center",
+      "bleed": true,
+      "separator": true,
+      "showBorder": true,
+      "spacing": "Small",
+      "roundedCorners": true
+    }
+  ],
+  "bleed": true,
+  "showBorder": true,
+  "separator": true
+}
