@@ -50,36 +50,37 @@ def build_dynamic_card_with_tasks(data: dict) -> Optional[dict]:
 def extract_task_section_template(full_template: dict) -> Optional[dict]:
     """Extract the complete task section template including table header and task rows."""
     def find_table_structure(items):
-        table_elements = []
+        if not isinstance(items, list):
+            return None
+            
+        # First, try to find the pattern at this level
         for i, item in enumerate(items):
+            if isinstance(item, dict) and item.get("type") == "ColumnSet":
+                # Look for the first task row container after this ColumnSet
+                for j in range(i + 1, len(items)):
+                    next_item = items[j]
+                    if isinstance(next_item, dict) and next_item.get("type") == "Container" and "selectAction" in next_item:
+                        s = str(next_item)
+                        if ("tasks[0]" in s) or ("{{tasks[" in s):
+                            table_elements = [item, next_item]  # header + row
+                            # Look for the details container after it
+                            for k in range(j + 1, len(items)):
+                                details_item = items[k]
+                                if (
+                                    isinstance(details_item, dict)
+                                    and details_item.get("type") == "Container"
+                                    and (
+                                        details_item.get("id") == "details1"
+                                        or str(details_item.get("id", "")).startswith("details")
+                                    )
+                                ):
+                                    table_elements.append(details_item)
+                                    break
+                            return table_elements
+        
+        # If not found at this level, recurse into nested structures
+        for item in items:
             if isinstance(item, dict):
-                # Heuristic: treat a ColumnSet as the header if it is followed by a
-                # Container that looks like the first task row (has selectAction and
-                # task placeholders like tasks[0] or any {{tasks[...}} pattern).
-                if item.get("type") == "ColumnSet":
-                    # Look for the first task row container after this ColumnSet
-                    for j in range(i + 1, len(items)):
-                        next_item = items[j]
-                        if isinstance(next_item, dict) and next_item.get("type") == "Container" and "selectAction" in next_item:
-                            s = str(next_item)
-                            if ("tasks[0]" in s) or ("{{tasks[" in s):
-                                table_elements.append(item)  # header
-                                table_elements.append(next_item)  # first row
-                                # Look for the details container after it
-                                for k in range(j + 1, len(items)):
-                                    details_item = items[k]
-                                    if (
-                                        isinstance(details_item, dict)
-                                        and details_item.get("type") == "Container"
-                                        and (
-                                            details_item.get("id") == "details1"
-                                            or str(details_item.get("id", "")).startswith("details")
-                                        )
-                                    ):
-                                        table_elements.append(details_item)
-                                        break
-                                break
-                # Recurse into nested structures
                 if "items" in item:
                     result = find_table_structure(item["items"])
                     if result:
