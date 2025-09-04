@@ -30,7 +30,7 @@
                     "items": [
                         {
                             "type": "Badge",
-                            "text": "{dueDate}",
+                            "text": "{{deadline.daysLeft}} days left",
                             "style": "Attention",
                             "appearance": "Tint",
                             "spacing": "None"
@@ -45,7 +45,7 @@
             "items": [
                 {
                     "type": "TextBlock",
-                    "text": "{{meeting.type}}",
+                    "text": "{{task.title}}",
                     "size": "Default",
                     "weight": "Bolder",
                     "color": "Default",
@@ -109,19 +109,6 @@
                     "type": "Container",
                     "separator": true,
                     "spacing": "Small",
-                    "selectAction": {
-                        "type": "Action.ToggleVisibility",
-                        "targetElements": [
-                            {
-                                "elementId": "details1",
-                                "isVisible": true
-                            },
-                            {
-                                "elementId": "details2",
-                                "isVisible": false
-                            }
-                        ]
-                    },
                     "items": [
                         {
                             "type": "ColumnSet",
@@ -132,7 +119,7 @@
                                     "items": [
                                         {
                                             "type": "TextBlock",
-                                            "text": "{{tasks[0].title}}",
+                                            "text": "{{task.progressItem}}",
                                             "maxLines": 1,
                                             "spacing": "Small",
                                             "isSubtle": false,
@@ -166,7 +153,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].type}}",
+                                                            "text": "{{task.type}}",
                                                             "wrap": true,
                                                             "size": "Small"
                                                         }
@@ -191,7 +178,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].dueDate}}",
+                                                            "text": "{{task.dueDate}}",
                                                             "size": "Small"
                                                         }
                                                     ]
@@ -202,6 +189,7 @@
                                                     "items": [
                                                         {
                                                             "type": "Input.Toggle",
+                                                            "id": "toggle1",
                                                             "spacing": "None"
                                                         }
                                                     ],
@@ -217,7 +205,15 @@
                                                             "size": "xxSmall"
                                                         }
                                                     ],
-                                                    "spacing": "None"
+                                                    "spacing": "None",
+                                                    "selectAction": {
+                                                        "type": "Action.ToggleVisibility",
+                                                        "targetElements": [
+                                                            {
+                                                                "elementId": "details1"
+                                                            }
+                                                        ]
+                                                    }
                                                 }
                                             ]
                                         }
@@ -235,7 +231,7 @@
                     "items": [
                         {
                             "type": "TextBlock",
-                            "text": "{{tasks[0].detailsTitle}}",
+                            "text": "{{task.secondaryTitle}}",
                             "size": "Medium",
                             "weight": "Bolder",
                             "spacing": "None"
@@ -282,7 +278,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].meetingOrigin}}",
+                                                            "text": "{{meeting.origin}}",
                                                             "size": "Small",
                                                             "wrap": true
                                                         }
@@ -317,7 +313,7 @@
                                     "items": [
                                         {
                                             "type": "TextBlock",
-                                            "text": "{{tasks[0].meetingDate}}",
+                                            "text": "{{meeting.date}}",
                                             "size": "Small"
                                         }
                                     ]
@@ -348,7 +344,7 @@
                                     "items": [
                                         {
                                             "type": "TextBlock",
-                                            "text": "{{tasks[0].agendaItem}}",
+                                            "text": "{{meeting.agendaItem}}",
                                             "size": "Small",
                                             "wrap": true
                                         }
@@ -398,7 +394,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[0].relation}}",
+                                                            "text": "{{task.relation}}",
                                                             "size": "Small",
                                                             "wrap": true,
                                                             "spacing": "None"
@@ -421,19 +417,6 @@
                     "type": "Container",
                     "separator": true,
                     "spacing": "Small",
-                    "selectAction": {
-                        "type": "Action.ToggleVisibility",
-                        "targetElements": [
-                            {
-                                "elementId": "details1",
-                                "isVisible": false
-                            },
-                            {
-                                "elementId": "details2",
-                                "isVisible": true
-                            }
-                        ]
-                    },
                     "items": [
                         {
                             "type": "ColumnSet",
@@ -444,7 +427,7 @@
                                     "items": [
                                         {
                                             "type": "TextBlock",
-                                            "text": "{{tasks[1].title}}",
+                                            "text": "{{task.secondaryTitle}}",
                                             "maxLines": 1,
                                             "spacing": "Small",
                                             "isSubtle": false,
@@ -478,7 +461,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].type}}",
+                                                            "text": "{{task.type}}",
                                                             "wrap": true,
                                                             "size": "Small"
                                                         }
@@ -503,7 +486,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].dueDate}}",
+                                                            "text": "{{task.dueDate}}",
                                                             "size": "Small"
                                                         }
                                                     ]
@@ -514,6 +497,7 @@
                                                     "items": [
                                                         {
                                                             "type": "Input.Toggle",
+                                                            "id": "toggle2",
                                                             "spacing": "None"
                                                         }
                                                     ],
@@ -529,7 +513,15 @@
                                                             "size": "xxSmall"
                                                         }
                                                     ],
-                                                    "spacing": "None"
+                                                    "spacing": "None",
+                                                    "selectAction": {
+                                                        "type": "Action.ToggleVisibility",
+                                                        "targetElements": [
+                                                            {
+                                                                "elementId": "details2"
+                                                            }
+                                                        ]
+                                                    }
                                                 }
                                             ]
                                         }
@@ -547,7 +539,7 @@
                     "items": [
                         {
                             "type": "TextBlock",
-                            "text": "{{tasks[1].detailsTitle}}",
+                            "text": "{{task.progressItem}}",
                             "size": "Medium",
                             "weight": "Bolder",
                             "spacing": "None"
@@ -594,7 +586,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].meetingOrigin}}",
+                                                            "text": "{{meeting.origin}}",
                                                             "size": "Small",
                                                             "wrap": true
                                                         }
@@ -629,7 +621,7 @@
                                     "items": [
                                         {
                                             "type": "TextBlock",
-                                            "text": "{{tasks[1].meetingDate}}",
+                                            "text": "{{meeting.date}}",
                                             "size": "Small"
                                         }
                                     ]
@@ -660,7 +652,7 @@
                                     "items": [
                                         {
                                             "type": "TextBlock",
-                                            "text": "{{tasks[1].agendaItem}}",
+                                            "text": "{{meeting.agendaItem}}",
                                             "size": "Small",
                                             "wrap": true
                                         }
@@ -710,7 +702,7 @@
                                                     "items": [
                                                         {
                                                             "type": "TextBlock",
-                                                            "text": "{{tasks[1].relation}}",
+                                                            "text": "{{task.relation}}",
                                                             "size": "Small",
                                                             "wrap": true,
                                                             "spacing": "None"
@@ -761,18 +753,5 @@
             "showBorder": true,
             "separator": true
         }
-    ],
-    "selectAction": {
-        "type": "Action.ToggleVisibility",
-        "targetElements": [
-            {
-                "elementId": "details1",
-                "isVisible": false
-            },
-            {
-                "elementId": "details2",
-                "isVisible": false
-            }
-        ]
-    }
+    ]
 }

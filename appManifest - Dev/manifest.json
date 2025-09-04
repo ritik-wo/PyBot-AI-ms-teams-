@@ -1,14 +1,14 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.23/MicrosoftTeams.schema.json",
   "manifestVersion": "1.23",
-  "version": "1.0.8",
-  "id": "bc705362-5fc9-43a3-a4c3-0856167d5a15",
+  "version": "1.0.1",
+  "id": "c20004a4-edbf-4a7e-aa62-90a56fbac2f1",
   "name": {
-    "short": "ProgressMaker Pilot (DEV)",
-    "full": "ProgressMaker Pilot (DEV) - Meeting assistance with AI chat"
+    "short": "Python Bot Scheduler ",
+    "full": "Python Bot Scheduler  - Meeting assistance with AI chat"
   },
   "developer": {
-    "name": "ProgressMaker",
+    "name": "Test",
     "websiteUrl": "https://www.progressmaker.io/",
     "privacyUrl": "https://www.progressmaker.io/data-privacy/",
     "termsOfUseUrl": "https://www.progressmaker.io/terms-conditions/"
@@ -61,7 +61,8 @@
     "gateway.test.progressmaker.io",
     "login.microsoftonline.com",
     "graph.microsoft.com",
-    "api.test.progressmaker.io"
+    "api.test.progressmaker.io",
+    "051ea00c7033.ngrok-free.app"
   ],
   "webApplicationInfo": {
     "id": "17d8f648-daad-44b5-a8e0-3e52b54e13b8",

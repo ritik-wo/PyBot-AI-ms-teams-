@@ -17,7 +17,8 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-get_token.py
+appManifest/manifest.zip
+appManifest - Dev/manifest.zip
 
 # Environment and secrets
 .env

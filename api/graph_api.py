@@ -4,22 +4,36 @@ import json
 from datetime import datetime
 
 # Graph API Configuration
-GRAPH_CLIENT_ID = os.environ.get("MicrosoftAppId")
-GRAPH_CLIENT_SECRET = os.environ.get("MicrosoftAppPassword")
-GRAPH_TENANT_ID = os.environ.get("CHANNEL_AUTH_TENANT")
+def get_graph_credentials():
+    from dotenv import load_dotenv
+    load_dotenv()
+    
+    client_id = os.environ.get("CLIENT_ID", "").strip() or os.environ.get("MicrosoftAppId", "")
+    client_secret = os.environ.get("CLIENT_SECRET", "").strip() or os.environ.get("MicrosoftAppPassword", "")
+    tenant_id = os.environ.get("TENANT_ID", "").strip() or os.environ.get("CHANNEL_AUTH_TENANT", "")
+    
+    return client_id, client_secret, tenant_id
 
 def get_fresh_graph_access_token():
     """Get a fresh access token for Microsoft Graph API"""
-    url = f"https://login.microsoftonline.com/{GRAPH_TENANT_ID}/oauth2/v2.0/token"
+    client_id, client_secret, tenant_id = get_graph_credentials()
+    
+    print(f"[DEBUG] Environment variables loaded:")
+    print(f"[DEBUG] client_id: {client_id}")
+    print(f"[DEBUG] client_secret: {client_secret}")
+    print(f"[DEBUG] tenant_id: {tenant_id}")
+    
+    if not all([client_id, client_secret, tenant_id]):
+        raise ValueError("Missing required credentials. Please check environment variables.")
+    
+    url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
     data = {
         "grant_type": "client_credentials",
-        "client_id": GRAPH_CLIENT_ID,
-        "client_secret": GRAPH_CLIENT_SECRET,
+        "client_id": client_id,
+        "client_secret": client_secret,
         "scope": "https://graph.microsoft.com/.default"
     }
     print(f"[DEBUG] Requesting fresh Graph access token from {url}")
-    print(f"[DEBUG] Using client_id: {GRAPH_CLIENT_ID}")
-    print(f"[DEBUG] Using tenant_id: {GRAPH_TENANT_ID}")
     r = requests.post(url, data=data)
     print(f"[DEBUG] Fresh token response: {r.status_code} {r.text}")
     r.raise_for_status()
@@ -321,4 +335,4 @@ def send_teams_activity_message(user_id, message, access_token):
     r = requests.post(url, headers=headers, json=data)
     print(f"[DEBUG] Teams activity response: {r.status_code} {r.text}")
     r.raise_for_status()
-    return r.json() 
+    return r.json()

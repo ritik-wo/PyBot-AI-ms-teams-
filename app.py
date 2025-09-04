@@ -24,19 +24,21 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 
-# Import the message service
-from api.message_service import send_message_to_user_service, update_card_service
-from api.message_service import send_deadline_to_user_service
+# Import the modular message services
+from api.messaging_core import send_message_to_user_service
+from api.card_update_service import update_card_service
+from api.messaging_core import send_deadline_to_user_service
+
+# Import scheduler service
+from services.scheduler_service import DeadlineSchedulerService
 
 # Explicitly load the .env file from the project root
 load_dotenv(dotenv_path=Path('.') / '.env')
 
-print("MicrosoftAppId from env:", os.environ.get("MicrosoftAppId"))
-print("MicrosoftAppPassword from env:", os.environ.get("MicrosoftAppPassword"))
+
 
 CONFIG = DefaultConfig()
-print(f"Loaded APP_ID: {CONFIG.APP_ID}")
-print(f"Loaded APP_PASSWORD: {CONFIG.APP_PASSWORD[:5]}***")
+
 
 # Create adapter.
 # See https://aka.ms/about-bot-adapter to learn more about how bots work.
@@ -91,6 +93,9 @@ APP_ID = SETTINGS.app_id if SETTINGS.app_id else uuid.uuid4()
 
 # Create the Bot
 BOT = TeamsConversationBot(CONFIG.APP_ID, CONFIG.APP_PASSWORD)
+
+# Initialize the deadline scheduler service
+DEADLINE_SCHEDULER = DeadlineSchedulerService(ADAPTER, CONFIG.APP_ID)
 
 
 # Listen for incoming requests on /api/messages.
@@ -164,7 +169,7 @@ APP.router.add_post("/api/messages", messages)
 APP.router.add_post("/api/send-message-to-all", send_message_to_all)
 APP.router.add_post("/api/send-message-to-user", send_message_to_user)
  
-# Endpoint to send a deadline card (based on pre-meeting sample-exm.json) to a specific user
+# Endpoint to send a deadline card (based on pre-meeting deadline_template.json) to a specific user
 async def send_deadline_to_user(req: Request) -> Response:
     data = await req.json()
     email = data.get("email")
@@ -195,15 +200,58 @@ async def update_card(req: Request) -> Response:
         return json_response({"error": "Provide either 'activity_id' (Bot Framework) or 'chat_id' (Graph API)."}, status=400)
     return await update_card_service(activity_id, chat_id, ADAPTER, CONFIG.APP_ID, card_name, conversation_reference)
 
+# Manual trigger endpoint for testing deadline notifications
+async def trigger_deadline_check(req: Request) -> Response:
+    """Manually trigger deadline notification check for testing"""
+    try:
+        result = await DEADLINE_SCHEDULER.trigger_manual_notification_check()
+        return json_response(result)
+    except Exception as e:
+        return json_response({"error": str(e)}, status=500)
+
+# Scheduler status endpoint
+async def scheduler_status(req: Request) -> Response:
+    """Get current scheduler status"""
+    try:
+        status = DEADLINE_SCHEDULER.get_scheduler_status()
+        return json_response(status)
+    except Exception as e:
+        return json_response({"error": str(e)}, status=500)
+
 APP.router.add_post("/api/update-card", update_card)
 APP.router.add_post("/api/send-deadline-to-user", send_deadline_to_user)
+APP.router.add_post("/api/trigger-deadline-check", trigger_deadline_check)
+APP.router.add_get("/api/scheduler-status", scheduler_status)
 APP.router.add_get("/", root)
+
+async def startup_handler(app):
+    """Handle application startup tasks"""
+    try:
+        # Start the deadline scheduler
+        await DEADLINE_SCHEDULER.start_scheduler()
+        print("[INFO] Deadline scheduler started successfully")
+    except Exception as e:
+        print(f"[ERROR] Failed to start deadline scheduler: {e}")
+
+async def shutdown_handler(app):
+    """Handle application shutdown tasks"""
+    try:
+        # Stop the deadline scheduler
+        await DEADLINE_SCHEDULER.stop_scheduler()
+        print("[INFO] Deadline scheduler stopped successfully")
+    except Exception as e:
+        print(f"[ERROR] Failed to stop deadline scheduler: {e}")
 
 if __name__ == "__main__":
     try:
         # Use PORT from environment variable (for Render) or fallback to CONFIG.PORT
         port = int(os.environ.get("PORT", CONFIG.PORT))
         print(f"[INFO] Starting bot on port: {port}")
+        
+        # Set up startup and shutdown handlers
+        APP.on_startup.append(startup_handler)
+        APP.on_shutdown.append(shutdown_handler)
+        
         web.run_app(APP, host="0.0.0.0", port=port)
     except Exception as error:
         raise error

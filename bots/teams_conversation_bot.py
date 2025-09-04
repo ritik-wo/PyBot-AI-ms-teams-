@@ -49,7 +49,30 @@ class TeamsConversationBot(TeamsActivityHandler):
             # Check if it's from our adaptive card
             if hasattr(turn_context.activity, 'value') and turn_context.activity.value:
                 action_data = turn_context.activity.value
-                if action_data.get('action') == 'reply':
+                
+                # Handle deadline card responses
+                if action_data.get('action') == 'update_deadline_tasks':
+                    from services.response_handler import handle_deadline_card_response
+                    handled = await handle_deadline_card_response(turn_context)
+                    if handled:
+                        return
+                
+                if action_data.get('action') == 'save_comment':
+                    print(f"[DEBUG] Received form data: {action_data}")
+                    user_input = action_data.get('userInput', '')
+                    
+                    # Get the original activity to update
+                    original_activity = turn_context.activity.reply_to_id
+                    if original_activity:
+                        # Create updated card with footer
+                        updated_card = await self._create_updated_card_with_footer(turn_context, user_input)
+                        # Update the original card
+                        updated_activity = MessageFactory.attachment(CardFactory.adaptive_card(updated_card))
+                        updated_activity.id = original_activity
+                        await turn_context.update_activity(updated_activity)
+                        return
+                    
+                elif action_data.get('action') == 'reply':
                     await turn_context.send_activity(f"Thanks for the reply! You said: {action_data.get('message', 'Hello Bot!')}")
                     return
             # Default response for adaptive card actions
@@ -57,7 +80,7 @@ class TeamsConversationBot(TeamsActivityHandler):
             return
         
         text = turn_context.activity.text.strip().lower()
-        if "show welcome" in text or "showwelcome" in text:
+        if "show welcome" in text or "welcome" in text:
             await self._send_card(turn_context, False)
             return
         if "mention me" in text:
@@ -252,6 +275,45 @@ class TeamsConversationBot(TeamsActivityHandler):
 
     async def _delete_card_activity(self, turn_context: TurnContext):
         await turn_context.delete_activity(turn_context.activity.reply_to_id)
+
+    async def _create_updated_card_with_footer(self, turn_context: TurnContext, user_input: str) -> dict:
+        """Create an updated version of the card with the user's input in the footer."""
+        # Get the original card attachment
+        original_card = turn_context.activity.attachments[0].content
+        
+        # Add footer container with user input and timestamp
+        footer_container = {
+            "type": "Container",
+            "style": "emphasis",
+            "spacing": "medium",
+            "separator": True,
+            "items": [
+                {
+                    "type": "TextBlock",
+                    "text": "Your data has been saved",
+                    "weight": "bolder",
+                    "size": "medium",
+                    "color": "good"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": f"Comment: {user_input}",
+                    "wrap": True,
+                    "size": "small"
+                },
+                {
+                    "type": "TextBlock",
+                    "text": f"Saved at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+                    "size": "small",
+                    "isSubtle": True
+                }
+            ]
+        }
+        
+        # Add the footer to the card's body
+        original_card['body'].append(footer_container)
+        
+        return original_card
 
     async def send_message_to_all_members(self, message: str, adapter=None):
         global CONVERSATION_REFERENCE
